@@ -1,0 +1,1757 @@
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 6
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"barometer.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.bss.prom,"aw",%nobits
+  20              		.align	2
+  23              	prom:
+  24 0000 00000000 		.space	12
+  24      00000000 
+  24      00000000 
+  25              		.section	.data.pressAddr,"aw"
+  28              	pressAddr:
+  29 0000 40       		.byte	64
+  30              		.section	.data.tempAddr,"aw"
+  33              	tempAddr:
+  34 0000 50       		.byte	80
+  35              		.section	.data.convDelay,"aw"
+  36              		.align	2
+  39              	convDelay:
+  40 0000 01000000 		.word	1
+  41              		.section	.bss.temperature,"aw",%nobits
+  42              		.align	2
+  45              	temperature:
+  46 0000 00000000 		.space	4
+  47              		.section	.bss.pressure,"aw",%nobits
+  48              		.align	2
+  51              	pressure:
+  52 0000 00000000 		.space	4
+  53              		.section	.bss.altitude,"aw",%nobits
+  54              		.align	2
+  57              	altitude:
+  58 0000 00000000 		.space	4
+  59              		.section	.text.ms5611_init,"ax",%progbits
+  60              		.align	1
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	ms5611_init:
+  66              	.LFB130:
+  67              		.file 1 "Core/Src/barometer.c"
+   1:Core/Src/barometer.c **** /*
+   2:Core/Src/barometer.c ****  * barometer.c
+   3:Core/Src/barometer.c ****  *
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 2
+
+
+   4:Core/Src/barometer.c ****  *  Created on: 5 oct. 2018
+   5:Core/Src/barometer.c ****  *      Author: alex
+   6:Core/Src/barometer.c ****  */
+   7:Core/Src/barometer.c **** 
+   8:Core/Src/barometer.c **** #include "barometer.h"
+   9:Core/Src/barometer.c **** #include "stm32f4xx_hal.h"
+  10:Core/Src/barometer.c **** #include <math.h>
+  11:Core/Src/barometer.c **** 
+  12:Core/Src/barometer.c **** //TODO : set a proper timing
+  13:Core/Src/barometer.c **** #define SPI_TIMEOUT 50 //in ms
+  14:Core/Src/barometer.c **** 
+  15:Core/Src/barometer.c **** #define MS5611_EN HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_RESET);
+  16:Core/Src/barometer.c **** #define MS5611_DIS HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET);
+  17:Core/Src/barometer.c **** 
+  18:Core/Src/barometer.c **** #define CMD_RESET 0x1E
+  19:Core/Src/barometer.c **** #define CMD_PROM_C1 0xA2
+  20:Core/Src/barometer.c **** #define CMD_PROM_C2 0xA4
+  21:Core/Src/barometer.c **** #define CMD_PROM_C3 0xA6
+  22:Core/Src/barometer.c **** #define CMD_PROM_C4 0xA8
+  23:Core/Src/barometer.c **** #define CMD_PROM_C5 0xAA
+  24:Core/Src/barometer.c **** #define CMD_PROM_C6 0xAC
+  25:Core/Src/barometer.c **** 
+  26:Core/Src/barometer.c **** #define PRESSURE_OSR_256  0x40
+  27:Core/Src/barometer.c **** #define PRESSURE_OSR_512  0x42
+  28:Core/Src/barometer.c **** #define PRESSURE_OSR_1024 0x44
+  29:Core/Src/barometer.c **** #define PRESSURE_OSR_2048 0x46
+  30:Core/Src/barometer.c **** #define PRESSURE_OSR_4096 0x48
+  31:Core/Src/barometer.c **** 
+  32:Core/Src/barometer.c **** #define TEMP_OSR_256      0x50
+  33:Core/Src/barometer.c **** #define TEMP_OSR_512  	  0x52
+  34:Core/Src/barometer.c **** #define TEMP_OSR_1024 	  0x54
+  35:Core/Src/barometer.c **** #define TEMP_OSR_2048     0x56
+  36:Core/Src/barometer.c **** #define TEMP_OSR_4096     0x58
+  37:Core/Src/barometer.c **** 
+  38:Core/Src/barometer.c **** #define CONVERSION_OSR_256  1
+  39:Core/Src/barometer.c **** #define CONVERSION_OSR_512  2
+  40:Core/Src/barometer.c **** #define CONVERSION_OSR_1024 3
+  41:Core/Src/barometer.c **** #define CONVERSION_OSR_2048 5
+  42:Core/Src/barometer.c **** #define CONVERSION_OSR_4096 10
+  43:Core/Src/barometer.c **** 
+  44:Core/Src/barometer.c **** static uint16_t prom[6];
+  45:Core/Src/barometer.c **** extern SPI_HandleTypeDef hspi1;
+  46:Core/Src/barometer.c **** 
+  47:Core/Src/barometer.c **** //min OSR by default
+  48:Core/Src/barometer.c **** static uint8_t pressAddr = PRESSURE_OSR_256;
+  49:Core/Src/barometer.c **** static uint8_t tempAddr = TEMP_OSR_256;
+  50:Core/Src/barometer.c **** static uint32_t convDelay = CONVERSION_OSR_256;
+  51:Core/Src/barometer.c **** 
+  52:Core/Src/barometer.c **** static int32_t temperature;
+  53:Core/Src/barometer.c **** static int32_t pressure;
+  54:Core/Src/barometer.c **** static float altitude;
+  55:Core/Src/barometer.c **** 
+  56:Core/Src/barometer.c **** /**
+  57:Core/Src/barometer.c ****  * @brief init the pressure sensor with default parameters
+  58:Core/Src/barometer.c ****  */
+  59:Core/Src/barometer.c **** static void ms5611_init();
+  60:Core/Src/barometer.c **** 
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 3
+
+
+  61:Core/Src/barometer.c **** /**
+  62:Core/Src/barometer.c ****  * @brief write the command passed in parameters to the SPI Bus
+  63:Core/Src/barometer.c ****  *
+  64:Core/Src/barometer.c ****  * @param data the command to write
+  65:Core/Src/barometer.c ****  */
+  66:Core/Src/barometer.c **** static void ms5611_write(uint8_t data);
+  67:Core/Src/barometer.c **** 
+  68:Core/Src/barometer.c **** /**
+  69:Core/Src/barometer.c ****  * @brief read the n bits of the SPI Bus on  register reg
+  70:Core/Src/barometer.c ****  *
+  71:Core/Src/barometer.c ****  * @return the value read on the SPI bus
+  72:Core/Src/barometer.c ****  */
+  73:Core/Src/barometer.c **** static uint16_t ms5611_read16bits(uint8_t reg);
+  74:Core/Src/barometer.c **** static uint32_t ms5611_read24bits(uint8_t reg);
+  75:Core/Src/barometer.c **** 
+  76:Core/Src/barometer.c **** /**
+  77:Core/Src/barometer.c ****  * @brief read the raw value
+  78:Core/Src/barometer.c ****  *
+  79:Core/Src/barometer.c ****  * @return the value read on the SPI bus
+  80:Core/Src/barometer.c ****  */
+  81:Core/Src/barometer.c **** static uint32_t ms5611_readRawTemp();
+  82:Core/Src/barometer.c **** static uint32_t ms5611_readRawPressure();
+  83:Core/Src/barometer.c **** 
+  84:Core/Src/barometer.c **** 
+  85:Core/Src/barometer.c **** static void ms5611_init()
+  86:Core/Src/barometer.c **** {
+  68              		.loc 1 86 1
+  69              		.cfi_startproc
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 1, uses_anonymous_args = 0
+  72 0000 80B5     		push	{r7, lr}
+  73              	.LCFI0:
+  74              		.cfi_def_cfa_offset 8
+  75              		.cfi_offset 7, -8
+  76              		.cfi_offset 14, -4
+  77 0002 00AF     		add	r7, sp, #0
+  78              	.LCFI1:
+  79              		.cfi_def_cfa_register 7
+  87:Core/Src/barometer.c **** 	MS5611_DIS
+  80              		.loc 1 87 2
+  81 0004 0122     		movs	r2, #1
+  82 0006 0421     		movs	r1, #4
+  83 0008 1B48     		ldr	r0, .L2
+  84 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+  88:Core/Src/barometer.c **** 	HAL_Delay(10);
+  85              		.loc 1 88 2
+  86 000e 0A20     		movs	r0, #10
+  87 0010 FFF7FEFF 		bl	HAL_Delay
+  89:Core/Src/barometer.c **** 
+  90:Core/Src/barometer.c **** 	ms5611_write(CMD_RESET);
+  88              		.loc 1 90 2
+  89 0014 1E20     		movs	r0, #30
+  90 0016 FFF7FEFF 		bl	ms5611_write
+  91:Core/Src/barometer.c **** 	HAL_Delay(10);
+  91              		.loc 1 91 2
+  92 001a 0A20     		movs	r0, #10
+  93 001c FFF7FEFF 		bl	HAL_Delay
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 4
+
+
+  92:Core/Src/barometer.c **** 
+  93:Core/Src/barometer.c **** 	prom[0] = ms5611_read16bits(CMD_PROM_C1);
+  94              		.loc 1 93 12
+  95 0020 A220     		movs	r0, #162
+  96 0022 FFF7FEFF 		bl	ms5611_read16bits
+  97 0026 0346     		mov	r3, r0
+  98 0028 1A46     		mov	r2, r3
+  99              		.loc 1 93 10
+ 100 002a 144B     		ldr	r3, .L2+4
+ 101 002c 1A80     		strh	r2, [r3]	@ movhi
+  94:Core/Src/barometer.c **** 	prom[1] = ms5611_read16bits(CMD_PROM_C2);
+ 102              		.loc 1 94 12
+ 103 002e A420     		movs	r0, #164
+ 104 0030 FFF7FEFF 		bl	ms5611_read16bits
+ 105 0034 0346     		mov	r3, r0
+ 106 0036 1A46     		mov	r2, r3
+ 107              		.loc 1 94 10
+ 108 0038 104B     		ldr	r3, .L2+4
+ 109 003a 5A80     		strh	r2, [r3, #2]	@ movhi
+  95:Core/Src/barometer.c **** 	prom[2] = ms5611_read16bits(CMD_PROM_C3);
+ 110              		.loc 1 95 12
+ 111 003c A620     		movs	r0, #166
+ 112 003e FFF7FEFF 		bl	ms5611_read16bits
+ 113 0042 0346     		mov	r3, r0
+ 114 0044 1A46     		mov	r2, r3
+ 115              		.loc 1 95 10
+ 116 0046 0D4B     		ldr	r3, .L2+4
+ 117 0048 9A80     		strh	r2, [r3, #4]	@ movhi
+  96:Core/Src/barometer.c **** 	prom[3] = ms5611_read16bits(CMD_PROM_C4);
+ 118              		.loc 1 96 12
+ 119 004a A820     		movs	r0, #168
+ 120 004c FFF7FEFF 		bl	ms5611_read16bits
+ 121 0050 0346     		mov	r3, r0
+ 122 0052 1A46     		mov	r2, r3
+ 123              		.loc 1 96 10
+ 124 0054 094B     		ldr	r3, .L2+4
+ 125 0056 DA80     		strh	r2, [r3, #6]	@ movhi
+  97:Core/Src/barometer.c **** 	prom[4] = ms5611_read16bits(CMD_PROM_C5);
+ 126              		.loc 1 97 12
+ 127 0058 AA20     		movs	r0, #170
+ 128 005a FFF7FEFF 		bl	ms5611_read16bits
+ 129 005e 0346     		mov	r3, r0
+ 130 0060 1A46     		mov	r2, r3
+ 131              		.loc 1 97 10
+ 132 0062 064B     		ldr	r3, .L2+4
+ 133 0064 1A81     		strh	r2, [r3, #8]	@ movhi
+  98:Core/Src/barometer.c **** 	prom[5] = ms5611_read16bits(CMD_PROM_C6);
+ 134              		.loc 1 98 12
+ 135 0066 AC20     		movs	r0, #172
+ 136 0068 FFF7FEFF 		bl	ms5611_read16bits
+ 137 006c 0346     		mov	r3, r0
+ 138 006e 1A46     		mov	r2, r3
+ 139              		.loc 1 98 10
+ 140 0070 024B     		ldr	r3, .L2+4
+ 141 0072 5A81     		strh	r2, [r3, #10]	@ movhi
+  99:Core/Src/barometer.c **** 
+ 100:Core/Src/barometer.c **** 	// prom[1] = 65536L;          //  SENSt1
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 5
+
+
+ 101:Core/Src/barometer.c ****     // prom[2] = 131072L;         //  OFFt1
+ 102:Core/Src/barometer.c ****     // prom[3] = 7.8125E-3;       //  TCS
+ 103:Core/Src/barometer.c ****     // prom[4] = 1.5625e-2;       //  TCO
+ 104:Core/Src/barometer.c **** }
+ 142              		.loc 1 104 1
+ 143 0074 00BF     		nop
+ 144 0076 80BD     		pop	{r7, pc}
+ 145              	.L3:
+ 146              		.align	2
+ 147              	.L2:
+ 148 0078 00000240 		.word	1073872896
+ 149 007c 00000000 		.word	prom
+ 150              		.cfi_endproc
+ 151              	.LFE130:
+ 153              		.section	.text.ms5611_write,"ax",%progbits
+ 154              		.align	1
+ 155              		.syntax unified
+ 156              		.thumb
+ 157              		.thumb_func
+ 159              	ms5611_write:
+ 160              	.LFB131:
+ 105:Core/Src/barometer.c **** 
+ 106:Core/Src/barometer.c **** static void ms5611_write(uint8_t data)
+ 107:Core/Src/barometer.c **** {
+ 161              		.loc 1 107 1
+ 162              		.cfi_startproc
+ 163              		@ args = 0, pretend = 0, frame = 8
+ 164              		@ frame_needed = 1, uses_anonymous_args = 0
+ 165 0000 80B5     		push	{r7, lr}
+ 166              	.LCFI2:
+ 167              		.cfi_def_cfa_offset 8
+ 168              		.cfi_offset 7, -8
+ 169              		.cfi_offset 14, -4
+ 170 0002 82B0     		sub	sp, sp, #8
+ 171              	.LCFI3:
+ 172              		.cfi_def_cfa_offset 16
+ 173 0004 00AF     		add	r7, sp, #0
+ 174              	.LCFI4:
+ 175              		.cfi_def_cfa_register 7
+ 176 0006 0346     		mov	r3, r0
+ 177 0008 FB71     		strb	r3, [r7, #7]
+ 108:Core/Src/barometer.c **** 	MS5611_EN
+ 178              		.loc 1 108 2
+ 179 000a 0022     		movs	r2, #0
+ 180 000c 0421     		movs	r1, #4
+ 181 000e 0948     		ldr	r0, .L5
+ 182 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 109:Core/Src/barometer.c **** 	HAL_SPI_Transmit(&hspi1, &data, 1, SPI_TIMEOUT);
+ 183              		.loc 1 109 2
+ 184 0014 F91D     		adds	r1, r7, #7
+ 185 0016 3223     		movs	r3, #50
+ 186 0018 0122     		movs	r2, #1
+ 187 001a 0748     		ldr	r0, .L5+4
+ 188 001c FFF7FEFF 		bl	HAL_SPI_Transmit
+ 110:Core/Src/barometer.c **** 	MS5611_DIS
+ 189              		.loc 1 110 2
+ 190 0020 0122     		movs	r2, #1
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 6
+
+
+ 191 0022 0421     		movs	r1, #4
+ 192 0024 0348     		ldr	r0, .L5
+ 193 0026 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 111:Core/Src/barometer.c **** }
+ 194              		.loc 1 111 1
+ 195 002a 00BF     		nop
+ 196 002c 0837     		adds	r7, r7, #8
+ 197              	.LCFI5:
+ 198              		.cfi_def_cfa_offset 8
+ 199 002e BD46     		mov	sp, r7
+ 200              	.LCFI6:
+ 201              		.cfi_def_cfa_register 13
+ 202              		@ sp needed
+ 203 0030 80BD     		pop	{r7, pc}
+ 204              	.L6:
+ 205 0032 00BF     		.align	2
+ 206              	.L5:
+ 207 0034 00000240 		.word	1073872896
+ 208 0038 00000000 		.word	hspi1
+ 209              		.cfi_endproc
+ 210              	.LFE131:
+ 212              		.section	.text.ms5611_read16bits,"ax",%progbits
+ 213              		.align	1
+ 214              		.syntax unified
+ 215              		.thumb
+ 216              		.thumb_func
+ 218              	ms5611_read16bits:
+ 219              	.LFB132:
+ 112:Core/Src/barometer.c **** 
+ 113:Core/Src/barometer.c **** static uint16_t ms5611_read16bits(uint8_t reg)
+ 114:Core/Src/barometer.c **** {
+ 220              		.loc 1 114 1
+ 221              		.cfi_startproc
+ 222              		@ args = 0, pretend = 0, frame = 16
+ 223              		@ frame_needed = 1, uses_anonymous_args = 0
+ 224 0000 80B5     		push	{r7, lr}
+ 225              	.LCFI7:
+ 226              		.cfi_def_cfa_offset 8
+ 227              		.cfi_offset 7, -8
+ 228              		.cfi_offset 14, -4
+ 229 0002 86B0     		sub	sp, sp, #24
+ 230              	.LCFI8:
+ 231              		.cfi_def_cfa_offset 32
+ 232 0004 02AF     		add	r7, sp, #8
+ 233              	.LCFI9:
+ 234              		.cfi_def_cfa 7, 24
+ 235 0006 0346     		mov	r3, r0
+ 236 0008 FB71     		strb	r3, [r7, #7]
+ 115:Core/Src/barometer.c **** 	uint8_t byte[3];
+ 116:Core/Src/barometer.c **** 	uint16_t return_value;
+ 117:Core/Src/barometer.c **** 	MS5611_EN
+ 237              		.loc 1 117 2
+ 238 000a 0022     		movs	r2, #0
+ 239 000c 0421     		movs	r1, #4
+ 240 000e 0F48     		ldr	r0, .L9
+ 241 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 118:Core/Src/barometer.c **** 	HAL_SPI_TransmitReceive(&hspi1, &reg, byte, 3, SPI_TIMEOUT);
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 7
+
+
+ 242              		.loc 1 118 2
+ 243 0014 07F10802 		add	r2, r7, #8
+ 244 0018 F91D     		adds	r1, r7, #7
+ 245 001a 3223     		movs	r3, #50
+ 246 001c 0093     		str	r3, [sp]
+ 247 001e 0323     		movs	r3, #3
+ 248 0020 0B48     		ldr	r0, .L9+4
+ 249 0022 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
+ 119:Core/Src/barometer.c **** 	MS5611_DIS
+ 250              		.loc 1 119 2
+ 251 0026 0122     		movs	r2, #1
+ 252 0028 0421     		movs	r1, #4
+ 253 002a 0848     		ldr	r0, .L9
+ 254 002c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 120:Core/Src/barometer.c **** 	/**
+ 121:Core/Src/barometer.c **** 	 * We dont care about byte[0] because that is what was recorded while
+ 122:Core/Src/barometer.c **** 	 * we were sending the first byte of the cmd. Since the baro wasn't sending
+ 123:Core/Src/barometer.c **** 	 * actual data at that time (it was listening for command), data[0] will
+ 124:Core/Src/barometer.c **** 	 * contain garbage data (probably all 0's).
+ 125:Core/Src/barometer.c **** 	 */
+ 126:Core/Src/barometer.c **** 	return_value = ((uint16_t)byte[1]<<8) | (byte[2]);
+ 255              		.loc 1 126 32
+ 256 0030 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 257              		.loc 1 126 35
+ 258 0032 1B02     		lsls	r3, r3, #8
+ 259              		.loc 1 126 40
+ 260 0034 1AB2     		sxth	r2, r3
+ 261              		.loc 1 126 47
+ 262 0036 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 263 0038 1BB2     		sxth	r3, r3
+ 264              		.loc 1 126 40
+ 265 003a 1343     		orrs	r3, r3, r2
+ 266 003c 1BB2     		sxth	r3, r3
+ 267              		.loc 1 126 15
+ 268 003e FB81     		strh	r3, [r7, #14]	@ movhi
+ 127:Core/Src/barometer.c **** 	return return_value;
+ 269              		.loc 1 127 9
+ 270 0040 FB89     		ldrh	r3, [r7, #14]
+ 128:Core/Src/barometer.c **** }
+ 271              		.loc 1 128 1
+ 272 0042 1846     		mov	r0, r3
+ 273 0044 1037     		adds	r7, r7, #16
+ 274              	.LCFI10:
+ 275              		.cfi_def_cfa_offset 8
+ 276 0046 BD46     		mov	sp, r7
+ 277              	.LCFI11:
+ 278              		.cfi_def_cfa_register 13
+ 279              		@ sp needed
+ 280 0048 80BD     		pop	{r7, pc}
+ 281              	.L10:
+ 282 004a 00BF     		.align	2
+ 283              	.L9:
+ 284 004c 00000240 		.word	1073872896
+ 285 0050 00000000 		.word	hspi1
+ 286              		.cfi_endproc
+ 287              	.LFE132:
+ 289              		.section	.text.ms5611_read24bits,"ax",%progbits
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 8
+
+
+ 290              		.align	1
+ 291              		.syntax unified
+ 292              		.thumb
+ 293              		.thumb_func
+ 295              	ms5611_read24bits:
+ 296              	.LFB133:
+ 129:Core/Src/barometer.c **** 
+ 130:Core/Src/barometer.c **** static uint32_t ms5611_read24bits(uint8_t reg)
+ 131:Core/Src/barometer.c **** {
+ 297              		.loc 1 131 1
+ 298              		.cfi_startproc
+ 299              		@ args = 0, pretend = 0, frame = 16
+ 300              		@ frame_needed = 1, uses_anonymous_args = 0
+ 301 0000 80B5     		push	{r7, lr}
+ 302              	.LCFI12:
+ 303              		.cfi_def_cfa_offset 8
+ 304              		.cfi_offset 7, -8
+ 305              		.cfi_offset 14, -4
+ 306 0002 86B0     		sub	sp, sp, #24
+ 307              	.LCFI13:
+ 308              		.cfi_def_cfa_offset 32
+ 309 0004 02AF     		add	r7, sp, #8
+ 310              	.LCFI14:
+ 311              		.cfi_def_cfa 7, 24
+ 312 0006 0346     		mov	r3, r0
+ 313 0008 FB71     		strb	r3, [r7, #7]
+ 132:Core/Src/barometer.c **** 	uint8_t byte[4];
+ 133:Core/Src/barometer.c **** 	uint32_t return_value;
+ 134:Core/Src/barometer.c **** 	MS5611_EN
+ 314              		.loc 1 134 2
+ 315 000a 0022     		movs	r2, #0
+ 316 000c 0421     		movs	r1, #4
+ 317 000e 0F48     		ldr	r0, .L13
+ 318 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 135:Core/Src/barometer.c **** 	HAL_SPI_TransmitReceive(&hspi1, &reg, byte, 4, SPI_TIMEOUT);
+ 319              		.loc 1 135 2
+ 320 0014 07F10802 		add	r2, r7, #8
+ 321 0018 F91D     		adds	r1, r7, #7
+ 322 001a 3223     		movs	r3, #50
+ 323 001c 0093     		str	r3, [sp]
+ 324 001e 0423     		movs	r3, #4
+ 325 0020 0B48     		ldr	r0, .L13+4
+ 326 0022 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
+ 136:Core/Src/barometer.c **** 	MS5611_DIS
+ 327              		.loc 1 136 2
+ 328 0026 0122     		movs	r2, #1
+ 329 0028 0421     		movs	r1, #4
+ 330 002a 0848     		ldr	r0, .L13
+ 331 002c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 137:Core/Src/barometer.c **** 	return_value = ((uint32_t)byte[1]<<16) | ((uint32_t)(byte[2]<<8)) | (byte[3]);
+ 332              		.loc 1 137 32
+ 333 0030 7B7A     		ldrb	r3, [r7, #9]	@ zero_extendqisi2
+ 334              		.loc 1 137 35
+ 335 0032 1B04     		lsls	r3, r3, #16
+ 336              		.loc 1 137 59
+ 337 0034 BA7A     		ldrb	r2, [r7, #10]	@ zero_extendqisi2
+ 338              		.loc 1 137 62
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 9
+
+
+ 339 0036 1202     		lsls	r2, r2, #8
+ 340              		.loc 1 137 41
+ 341 0038 1343     		orrs	r3, r3, r2
+ 342              		.loc 1 137 75
+ 343 003a FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 344              		.loc 1 137 15
+ 345 003c 1343     		orrs	r3, r3, r2
+ 346 003e FB60     		str	r3, [r7, #12]
+ 138:Core/Src/barometer.c **** 	return return_value;
+ 347              		.loc 1 138 9
+ 348 0040 FB68     		ldr	r3, [r7, #12]
+ 139:Core/Src/barometer.c **** }
+ 349              		.loc 1 139 1
+ 350 0042 1846     		mov	r0, r3
+ 351 0044 1037     		adds	r7, r7, #16
+ 352              	.LCFI15:
+ 353              		.cfi_def_cfa_offset 8
+ 354 0046 BD46     		mov	sp, r7
+ 355              	.LCFI16:
+ 356              		.cfi_def_cfa_register 13
+ 357              		@ sp needed
+ 358 0048 80BD     		pop	{r7, pc}
+ 359              	.L14:
+ 360 004a 00BF     		.align	2
+ 361              	.L13:
+ 362 004c 00000240 		.word	1073872896
+ 363 0050 00000000 		.word	hspi1
+ 364              		.cfi_endproc
+ 365              	.LFE133:
+ 367              		.section	.text.ms5611_readRawTemp,"ax",%progbits
+ 368              		.align	1
+ 369              		.syntax unified
+ 370              		.thumb
+ 371              		.thumb_func
+ 373              	ms5611_readRawTemp:
+ 374              	.LFB134:
+ 140:Core/Src/barometer.c **** 
+ 141:Core/Src/barometer.c **** static uint32_t ms5611_readRawTemp()
+ 142:Core/Src/barometer.c **** {
+ 375              		.loc 1 142 1
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 8
+ 378              		@ frame_needed = 1, uses_anonymous_args = 0
+ 379 0000 80B5     		push	{r7, lr}
+ 380              	.LCFI17:
+ 381              		.cfi_def_cfa_offset 8
+ 382              		.cfi_offset 7, -8
+ 383              		.cfi_offset 14, -4
+ 384 0002 82B0     		sub	sp, sp, #8
+ 385              	.LCFI18:
+ 386              		.cfi_def_cfa_offset 16
+ 387 0004 00AF     		add	r7, sp, #0
+ 388              	.LCFI19:
+ 389              		.cfi_def_cfa_register 7
+ 143:Core/Src/barometer.c **** 	uint32_t D2;
+ 144:Core/Src/barometer.c **** 	//Convert temp
+ 145:Core/Src/barometer.c **** 	ms5611_write(tempAddr);
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 10
+
+
+ 390              		.loc 1 145 2
+ 391 0006 094B     		ldr	r3, .L17
+ 392 0008 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 393 000a 1846     		mov	r0, r3
+ 394 000c FFF7FEFF 		bl	ms5611_write
+ 146:Core/Src/barometer.c **** 	//Conversion Time
+ 147:Core/Src/barometer.c **** 	HAL_Delay(convDelay);
+ 395              		.loc 1 147 2
+ 396 0010 074B     		ldr	r3, .L17+4
+ 397 0012 1B68     		ldr	r3, [r3]
+ 398 0014 1846     		mov	r0, r3
+ 399 0016 FFF7FEFF 		bl	HAL_Delay
+ 148:Core/Src/barometer.c **** 	//Read ADC
+ 149:Core/Src/barometer.c **** 	D2 = ms5611_read24bits(0x00);
+ 400              		.loc 1 149 7
+ 401 001a 0020     		movs	r0, #0
+ 402 001c FFF7FEFF 		bl	ms5611_read24bits
+ 403 0020 7860     		str	r0, [r7, #4]
+ 150:Core/Src/barometer.c **** 
+ 151:Core/Src/barometer.c **** 	return D2;
+ 404              		.loc 1 151 9
+ 405 0022 7B68     		ldr	r3, [r7, #4]
+ 152:Core/Src/barometer.c **** }
+ 406              		.loc 1 152 1
+ 407 0024 1846     		mov	r0, r3
+ 408 0026 0837     		adds	r7, r7, #8
+ 409              	.LCFI20:
+ 410              		.cfi_def_cfa_offset 8
+ 411 0028 BD46     		mov	sp, r7
+ 412              	.LCFI21:
+ 413              		.cfi_def_cfa_register 13
+ 414              		@ sp needed
+ 415 002a 80BD     		pop	{r7, pc}
+ 416              	.L18:
+ 417              		.align	2
+ 418              	.L17:
+ 419 002c 00000000 		.word	tempAddr
+ 420 0030 00000000 		.word	convDelay
+ 421              		.cfi_endproc
+ 422              	.LFE134:
+ 424              		.section	.text.ms5611_readRawPressure,"ax",%progbits
+ 425              		.align	1
+ 426              		.syntax unified
+ 427              		.thumb
+ 428              		.thumb_func
+ 430              	ms5611_readRawPressure:
+ 431              	.LFB135:
+ 153:Core/Src/barometer.c **** 
+ 154:Core/Src/barometer.c **** static uint32_t ms5611_readRawPressure()
+ 155:Core/Src/barometer.c **** {
+ 432              		.loc 1 155 1
+ 433              		.cfi_startproc
+ 434              		@ args = 0, pretend = 0, frame = 8
+ 435              		@ frame_needed = 1, uses_anonymous_args = 0
+ 436 0000 80B5     		push	{r7, lr}
+ 437              	.LCFI22:
+ 438              		.cfi_def_cfa_offset 8
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 11
+
+
+ 439              		.cfi_offset 7, -8
+ 440              		.cfi_offset 14, -4
+ 441 0002 82B0     		sub	sp, sp, #8
+ 442              	.LCFI23:
+ 443              		.cfi_def_cfa_offset 16
+ 444 0004 00AF     		add	r7, sp, #0
+ 445              	.LCFI24:
+ 446              		.cfi_def_cfa_register 7
+ 156:Core/Src/barometer.c **** 	uint32_t D1;
+ 157:Core/Src/barometer.c **** 	//Convert pressure
+ 158:Core/Src/barometer.c **** 	ms5611_write(pressAddr);
+ 447              		.loc 1 158 2
+ 448 0006 094B     		ldr	r3, .L21
+ 449 0008 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 450 000a 1846     		mov	r0, r3
+ 451 000c FFF7FEFF 		bl	ms5611_write
+ 159:Core/Src/barometer.c **** 	//Conversion time
+ 160:Core/Src/barometer.c **** 	HAL_Delay(convDelay);
+ 452              		.loc 1 160 2
+ 453 0010 074B     		ldr	r3, .L21+4
+ 454 0012 1B68     		ldr	r3, [r3]
+ 455 0014 1846     		mov	r0, r3
+ 456 0016 FFF7FEFF 		bl	HAL_Delay
+ 161:Core/Src/barometer.c **** 	//Read ADC
+ 162:Core/Src/barometer.c **** 	D1 = ms5611_read24bits(0x00);
+ 457              		.loc 1 162 7
+ 458 001a 0020     		movs	r0, #0
+ 459 001c FFF7FEFF 		bl	ms5611_read24bits
+ 460 0020 7860     		str	r0, [r7, #4]
+ 163:Core/Src/barometer.c **** 
+ 164:Core/Src/barometer.c **** 	return D1;
+ 461              		.loc 1 164 9
+ 462 0022 7B68     		ldr	r3, [r7, #4]
+ 165:Core/Src/barometer.c **** }
+ 463              		.loc 1 165 1
+ 464 0024 1846     		mov	r0, r3
+ 465 0026 0837     		adds	r7, r7, #8
+ 466              	.LCFI25:
+ 467              		.cfi_def_cfa_offset 8
+ 468 0028 BD46     		mov	sp, r7
+ 469              	.LCFI26:
+ 470              		.cfi_def_cfa_register 13
+ 471              		@ sp needed
+ 472 002a 80BD     		pop	{r7, pc}
+ 473              	.L22:
+ 474              		.align	2
+ 475              	.L21:
+ 476 002c 00000000 		.word	pressAddr
+ 477 0030 00000000 		.word	convDelay
+ 478              		.cfi_endproc
+ 479              	.LFE135:
+ 481              		.section	.text.Barometer_init,"ax",%progbits
+ 482              		.align	1
+ 483              		.global	Barometer_init
+ 484              		.syntax unified
+ 485              		.thumb
+ 486              		.thumb_func
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 12
+
+
+ 488              	Barometer_init:
+ 489              	.LFB136:
+ 166:Core/Src/barometer.c **** 
+ 167:Core/Src/barometer.c **** void Barometer_init()
+ 168:Core/Src/barometer.c **** {
+ 490              		.loc 1 168 1
+ 491              		.cfi_startproc
+ 492              		@ args = 0, pretend = 0, frame = 0
+ 493              		@ frame_needed = 1, uses_anonymous_args = 0
+ 494 0000 80B5     		push	{r7, lr}
+ 495              	.LCFI27:
+ 496              		.cfi_def_cfa_offset 8
+ 497              		.cfi_offset 7, -8
+ 498              		.cfi_offset 14, -4
+ 499 0002 00AF     		add	r7, sp, #0
+ 500              	.LCFI28:
+ 501              		.cfi_def_cfa_register 7
+ 169:Core/Src/barometer.c **** 	ms5611_init();
+ 502              		.loc 1 169 2
+ 503 0004 FFF7FEFF 		bl	ms5611_init
+ 170:Core/Src/barometer.c **** }
+ 504              		.loc 1 170 1
+ 505 0008 00BF     		nop
+ 506 000a 80BD     		pop	{r7, pc}
+ 507              		.cfi_endproc
+ 508              	.LFE136:
+ 510              		.section	.text.Barometer_setOSR,"ax",%progbits
+ 511              		.align	1
+ 512              		.global	Barometer_setOSR
+ 513              		.syntax unified
+ 514              		.thumb
+ 515              		.thumb_func
+ 517              	Barometer_setOSR:
+ 518              	.LFB137:
+ 171:Core/Src/barometer.c **** 
+ 172:Core/Src/barometer.c **** void Barometer_setOSR(OSR osr)
+ 173:Core/Src/barometer.c **** {
+ 519              		.loc 1 173 1
+ 520              		.cfi_startproc
+ 521              		@ args = 0, pretend = 0, frame = 8
+ 522              		@ frame_needed = 1, uses_anonymous_args = 0
+ 523              		@ link register save eliminated.
+ 524 0000 80B4     		push	{r7}
+ 525              	.LCFI29:
+ 526              		.cfi_def_cfa_offset 4
+ 527              		.cfi_offset 7, -4
+ 528 0002 83B0     		sub	sp, sp, #12
+ 529              	.LCFI30:
+ 530              		.cfi_def_cfa_offset 16
+ 531 0004 00AF     		add	r7, sp, #0
+ 532              	.LCFI31:
+ 533              		.cfi_def_cfa_register 7
+ 534 0006 0346     		mov	r3, r0
+ 535 0008 FB71     		strb	r3, [r7, #7]
+ 174:Core/Src/barometer.c **** 	switch(osr)
+ 536              		.loc 1 174 2
+ 537 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 13
+
+
+ 538 000c 013B     		subs	r3, r3, #1
+ 539 000e 032B     		cmp	r3, #3
+ 540 0010 0AD8     		bhi	.L25
+ 541 0012 01A2     		adr	r2, .L27
+ 542 0014 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 543              		.p2align 2
+ 544              	.L27:
+ 545 0018 3D000000 		.word	.L30+1
+ 546 001c 51000000 		.word	.L29+1
+ 547 0020 65000000 		.word	.L28+1
+ 548 0024 79000000 		.word	.L26+1
+ 549              		.p2align 1
+ 550              	.L25:
+ 175:Core/Src/barometer.c **** 	{
+ 176:Core/Src/barometer.c **** 		default:
+ 177:Core/Src/barometer.c **** 		case OSR_256:
+ 178:Core/Src/barometer.c **** 			pressAddr = PRESSURE_OSR_256;
+ 551              		.loc 1 178 14
+ 552 0028 1B4B     		ldr	r3, .L32
+ 553 002a 4022     		movs	r2, #64
+ 554 002c 1A70     		strb	r2, [r3]
+ 179:Core/Src/barometer.c **** 			tempAddr = TEMP_OSR_256;
+ 555              		.loc 1 179 13
+ 556 002e 1B4B     		ldr	r3, .L32+4
+ 557 0030 5022     		movs	r2, #80
+ 558 0032 1A70     		strb	r2, [r3]
+ 180:Core/Src/barometer.c **** 			convDelay = CONVERSION_OSR_256;
+ 559              		.loc 1 180 14
+ 560 0034 1A4B     		ldr	r3, .L32+8
+ 561 0036 0122     		movs	r2, #1
+ 562 0038 1A60     		str	r2, [r3]
+ 181:Core/Src/barometer.c **** 			break;
+ 563              		.loc 1 181 4
+ 564 003a 27E0     		b	.L31
+ 565              	.L30:
+ 182:Core/Src/barometer.c **** 		case OSR_512:
+ 183:Core/Src/barometer.c **** 			pressAddr = PRESSURE_OSR_512;
+ 566              		.loc 1 183 14
+ 567 003c 164B     		ldr	r3, .L32
+ 568 003e 4222     		movs	r2, #66
+ 569 0040 1A70     		strb	r2, [r3]
+ 184:Core/Src/barometer.c **** 			tempAddr = TEMP_OSR_512;
+ 570              		.loc 1 184 13
+ 571 0042 164B     		ldr	r3, .L32+4
+ 572 0044 5222     		movs	r2, #82
+ 573 0046 1A70     		strb	r2, [r3]
+ 185:Core/Src/barometer.c **** 			convDelay = CONVERSION_OSR_512;
+ 574              		.loc 1 185 14
+ 575 0048 154B     		ldr	r3, .L32+8
+ 576 004a 0222     		movs	r2, #2
+ 577 004c 1A60     		str	r2, [r3]
+ 186:Core/Src/barometer.c **** 			break;
+ 578              		.loc 1 186 4
+ 579 004e 1DE0     		b	.L31
+ 580              	.L29:
+ 187:Core/Src/barometer.c **** 		case OSR_1024:
+ 188:Core/Src/barometer.c **** 			pressAddr = PRESSURE_OSR_1024;
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 14
+
+
+ 581              		.loc 1 188 14
+ 582 0050 114B     		ldr	r3, .L32
+ 583 0052 4422     		movs	r2, #68
+ 584 0054 1A70     		strb	r2, [r3]
+ 189:Core/Src/barometer.c **** 			tempAddr = TEMP_OSR_1024;
+ 585              		.loc 1 189 13
+ 586 0056 114B     		ldr	r3, .L32+4
+ 587 0058 5422     		movs	r2, #84
+ 588 005a 1A70     		strb	r2, [r3]
+ 190:Core/Src/barometer.c **** 			convDelay = CONVERSION_OSR_1024;
+ 589              		.loc 1 190 14
+ 590 005c 104B     		ldr	r3, .L32+8
+ 591 005e 0322     		movs	r2, #3
+ 592 0060 1A60     		str	r2, [r3]
+ 191:Core/Src/barometer.c **** 			break;
+ 593              		.loc 1 191 4
+ 594 0062 13E0     		b	.L31
+ 595              	.L28:
+ 192:Core/Src/barometer.c **** 		case OSR_2048:
+ 193:Core/Src/barometer.c **** 			pressAddr = PRESSURE_OSR_2048;
+ 596              		.loc 1 193 14
+ 597 0064 0C4B     		ldr	r3, .L32
+ 598 0066 4622     		movs	r2, #70
+ 599 0068 1A70     		strb	r2, [r3]
+ 194:Core/Src/barometer.c **** 			tempAddr = TEMP_OSR_2048;
+ 600              		.loc 1 194 13
+ 601 006a 0C4B     		ldr	r3, .L32+4
+ 602 006c 5622     		movs	r2, #86
+ 603 006e 1A70     		strb	r2, [r3]
+ 195:Core/Src/barometer.c **** 			convDelay = CONVERSION_OSR_2048;
+ 604              		.loc 1 195 14
+ 605 0070 0B4B     		ldr	r3, .L32+8
+ 606 0072 0522     		movs	r2, #5
+ 607 0074 1A60     		str	r2, [r3]
+ 196:Core/Src/barometer.c **** 			break;
+ 608              		.loc 1 196 4
+ 609 0076 09E0     		b	.L31
+ 610              	.L26:
+ 197:Core/Src/barometer.c **** 		case OSR_4096:
+ 198:Core/Src/barometer.c **** 			pressAddr = PRESSURE_OSR_4096;
+ 611              		.loc 1 198 14
+ 612 0078 074B     		ldr	r3, .L32
+ 613 007a 4822     		movs	r2, #72
+ 614 007c 1A70     		strb	r2, [r3]
+ 199:Core/Src/barometer.c **** 			tempAddr = TEMP_OSR_4096;
+ 615              		.loc 1 199 13
+ 616 007e 074B     		ldr	r3, .L32+4
+ 617 0080 5822     		movs	r2, #88
+ 618 0082 1A70     		strb	r2, [r3]
+ 200:Core/Src/barometer.c **** 			convDelay = CONVERSION_OSR_4096;
+ 619              		.loc 1 200 14
+ 620 0084 064B     		ldr	r3, .L32+8
+ 621 0086 0A22     		movs	r2, #10
+ 622 0088 1A60     		str	r2, [r3]
+ 201:Core/Src/barometer.c **** 			break;
+ 623              		.loc 1 201 4
+ 624 008a 00BF     		nop
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 15
+
+
+ 625              	.L31:
+ 202:Core/Src/barometer.c **** 	}
+ 203:Core/Src/barometer.c **** }
+ 626              		.loc 1 203 1
+ 627 008c 00BF     		nop
+ 628 008e 0C37     		adds	r7, r7, #12
+ 629              	.LCFI32:
+ 630              		.cfi_def_cfa_offset 4
+ 631 0090 BD46     		mov	sp, r7
+ 632              	.LCFI33:
+ 633              		.cfi_def_cfa_register 13
+ 634              		@ sp needed
+ 635 0092 5DF8047B 		ldr	r7, [sp], #4
+ 636              	.LCFI34:
+ 637              		.cfi_restore 7
+ 638              		.cfi_def_cfa_offset 0
+ 639 0096 7047     		bx	lr
+ 640              	.L33:
+ 641              		.align	2
+ 642              	.L32:
+ 643 0098 00000000 		.word	pressAddr
+ 644 009c 00000000 		.word	tempAddr
+ 645 00a0 00000000 		.word	convDelay
+ 646              		.cfi_endproc
+ 647              	.LFE137:
+ 649              		.section	.text.Barometer_getTemp,"ax",%progbits
+ 650              		.align	1
+ 651              		.global	Barometer_getTemp
+ 652              		.syntax unified
+ 653              		.thumb
+ 654              		.thumb_func
+ 656              	Barometer_getTemp:
+ 657              	.LFB138:
+ 204:Core/Src/barometer.c **** 
+ 205:Core/Src/barometer.c **** int32_t Barometer_getTemp(bool calculate)
+ 206:Core/Src/barometer.c **** {
+ 658              		.loc 1 206 1
+ 659              		.cfi_startproc
+ 660              		@ args = 0, pretend = 0, frame = 8
+ 661              		@ frame_needed = 1, uses_anonymous_args = 0
+ 662 0000 80B5     		push	{r7, lr}
+ 663              	.LCFI35:
+ 664              		.cfi_def_cfa_offset 8
+ 665              		.cfi_offset 7, -8
+ 666              		.cfi_offset 14, -4
+ 667 0002 82B0     		sub	sp, sp, #8
+ 668              	.LCFI36:
+ 669              		.cfi_def_cfa_offset 16
+ 670 0004 00AF     		add	r7, sp, #0
+ 671              	.LCFI37:
+ 672              		.cfi_def_cfa_register 7
+ 673 0006 0346     		mov	r3, r0
+ 674 0008 FB71     		strb	r3, [r7, #7]
+ 207:Core/Src/barometer.c **** 	if (calculate)
+ 675              		.loc 1 207 5
+ 676 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 677 000c 002B     		cmp	r3, #0
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 16
+
+
+ 678 000e 01D0     		beq	.L35
+ 208:Core/Src/barometer.c **** 	{
+ 209:Core/Src/barometer.c **** 		Barometer_calculate();
+ 679              		.loc 1 209 3
+ 680 0010 FFF7FEFF 		bl	Barometer_calculate
+ 681              	.L35:
+ 210:Core/Src/barometer.c **** 	}
+ 211:Core/Src/barometer.c **** 	return temperature;
+ 682              		.loc 1 211 9
+ 683 0014 024B     		ldr	r3, .L37
+ 684 0016 1B68     		ldr	r3, [r3]
+ 212:Core/Src/barometer.c **** }
+ 685              		.loc 1 212 1
+ 686 0018 1846     		mov	r0, r3
+ 687 001a 0837     		adds	r7, r7, #8
+ 688              	.LCFI38:
+ 689              		.cfi_def_cfa_offset 8
+ 690 001c BD46     		mov	sp, r7
+ 691              	.LCFI39:
+ 692              		.cfi_def_cfa_register 13
+ 693              		@ sp needed
+ 694 001e 80BD     		pop	{r7, pc}
+ 695              	.L38:
+ 696              		.align	2
+ 697              	.L37:
+ 698 0020 00000000 		.word	temperature
+ 699              		.cfi_endproc
+ 700              	.LFE138:
+ 702              		.section	.text.Barometer_getPressure,"ax",%progbits
+ 703              		.align	1
+ 704              		.global	Barometer_getPressure
+ 705              		.syntax unified
+ 706              		.thumb
+ 707              		.thumb_func
+ 709              	Barometer_getPressure:
+ 710              	.LFB139:
+ 213:Core/Src/barometer.c **** 
+ 214:Core/Src/barometer.c **** int32_t Barometer_getPressure(bool calculate)
+ 215:Core/Src/barometer.c **** {
+ 711              		.loc 1 215 1
+ 712              		.cfi_startproc
+ 713              		@ args = 0, pretend = 0, frame = 8
+ 714              		@ frame_needed = 1, uses_anonymous_args = 0
+ 715 0000 80B5     		push	{r7, lr}
+ 716              	.LCFI40:
+ 717              		.cfi_def_cfa_offset 8
+ 718              		.cfi_offset 7, -8
+ 719              		.cfi_offset 14, -4
+ 720 0002 82B0     		sub	sp, sp, #8
+ 721              	.LCFI41:
+ 722              		.cfi_def_cfa_offset 16
+ 723 0004 00AF     		add	r7, sp, #0
+ 724              	.LCFI42:
+ 725              		.cfi_def_cfa_register 7
+ 726 0006 0346     		mov	r3, r0
+ 727 0008 FB71     		strb	r3, [r7, #7]
+ 216:Core/Src/barometer.c **** 	if (calculate)
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 17
+
+
+ 728              		.loc 1 216 5
+ 729 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 730 000c 002B     		cmp	r3, #0
+ 731 000e 01D0     		beq	.L40
+ 217:Core/Src/barometer.c **** 	{
+ 218:Core/Src/barometer.c **** 		Barometer_calculate();
+ 732              		.loc 1 218 3
+ 733 0010 FFF7FEFF 		bl	Barometer_calculate
+ 734              	.L40:
+ 219:Core/Src/barometer.c **** 	}
+ 220:Core/Src/barometer.c **** 	return pressure;
+ 735              		.loc 1 220 9
+ 736 0014 024B     		ldr	r3, .L42
+ 737 0016 1B68     		ldr	r3, [r3]
+ 221:Core/Src/barometer.c **** }
+ 738              		.loc 1 221 1
+ 739 0018 1846     		mov	r0, r3
+ 740 001a 0837     		adds	r7, r7, #8
+ 741              	.LCFI43:
+ 742              		.cfi_def_cfa_offset 8
+ 743 001c BD46     		mov	sp, r7
+ 744              	.LCFI44:
+ 745              		.cfi_def_cfa_register 13
+ 746              		@ sp needed
+ 747 001e 80BD     		pop	{r7, pc}
+ 748              	.L43:
+ 749              		.align	2
+ 750              	.L42:
+ 751 0020 00000000 		.word	pressure
+ 752              		.cfi_endproc
+ 753              	.LFE139:
+ 755              		.section	.text.Barometer_getAltitude,"ax",%progbits
+ 756              		.align	1
+ 757              		.global	Barometer_getAltitude
+ 758              		.syntax unified
+ 759              		.thumb
+ 760              		.thumb_func
+ 762              	Barometer_getAltitude:
+ 763              	.LFB140:
+ 222:Core/Src/barometer.c **** 
+ 223:Core/Src/barometer.c **** float Barometer_getAltitude(bool calculate)
+ 224:Core/Src/barometer.c **** {
+ 764              		.loc 1 224 1
+ 765              		.cfi_startproc
+ 766              		@ args = 0, pretend = 0, frame = 8
+ 767              		@ frame_needed = 1, uses_anonymous_args = 0
+ 768 0000 80B5     		push	{r7, lr}
+ 769              	.LCFI45:
+ 770              		.cfi_def_cfa_offset 8
+ 771              		.cfi_offset 7, -8
+ 772              		.cfi_offset 14, -4
+ 773 0002 82B0     		sub	sp, sp, #8
+ 774              	.LCFI46:
+ 775              		.cfi_def_cfa_offset 16
+ 776 0004 00AF     		add	r7, sp, #0
+ 777              	.LCFI47:
+ 778              		.cfi_def_cfa_register 7
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 18
+
+
+ 779 0006 0346     		mov	r3, r0
+ 780 0008 FB71     		strb	r3, [r7, #7]
+ 225:Core/Src/barometer.c **** 	if (calculate)
+ 781              		.loc 1 225 5
+ 782 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 783 000c 002B     		cmp	r3, #0
+ 784 000e 01D0     		beq	.L45
+ 226:Core/Src/barometer.c **** 	{
+ 227:Core/Src/barometer.c **** 		Barometer_calculate();
+ 785              		.loc 1 227 3
+ 786 0010 FFF7FEFF 		bl	Barometer_calculate
+ 787              	.L45:
+ 228:Core/Src/barometer.c **** 	}
+ 229:Core/Src/barometer.c **** 	return altitude;
+ 788              		.loc 1 229 9
+ 789 0014 044B     		ldr	r3, .L47
+ 790 0016 1B68     		ldr	r3, [r3]	@ float
+ 791 0018 07EE903A 		vmov	s15, r3
+ 230:Core/Src/barometer.c **** }
+ 792              		.loc 1 230 1
+ 793 001c B0EE670A 		vmov.f32	s0, s15
+ 794 0020 0837     		adds	r7, r7, #8
+ 795              	.LCFI48:
+ 796              		.cfi_def_cfa_offset 8
+ 797 0022 BD46     		mov	sp, r7
+ 798              	.LCFI49:
+ 799              		.cfi_def_cfa_register 13
+ 800              		@ sp needed
+ 801 0024 80BD     		pop	{r7, pc}
+ 802              	.L48:
+ 803 0026 00BF     		.align	2
+ 804              	.L47:
+ 805 0028 00000000 		.word	altitude
+ 806              		.cfi_endproc
+ 807              	.LFE140:
+ 809              		.global	__aeabi_f2d
+ 810              		.global	__aeabi_dsub
+ 811              		.global	__aeabi_dmul
+ 812              		.global	__aeabi_d2f
+ 813              		.section	.text.Barometer_calculate,"ax",%progbits
+ 814              		.align	1
+ 815              		.global	Barometer_calculate
+ 816              		.syntax unified
+ 817              		.thumb
+ 818              		.thumb_func
+ 820              	Barometer_calculate:
+ 821              	.LFB141:
+ 231:Core/Src/barometer.c **** 
+ 232:Core/Src/barometer.c **** void Barometer_calculate()
+ 233:Core/Src/barometer.c **** {
+ 822              		.loc 1 233 1
+ 823              		.cfi_startproc
+ 824              		@ args = 0, pretend = 0, frame = 336
+ 825              		@ frame_needed = 1, uses_anonymous_args = 0
+ 826 0000 2DE9B04F 		push	{r4, r5, r7, r8, r9, r10, fp, lr}
+ 827              	.LCFI50:
+ 828              		.cfi_def_cfa_offset 32
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 19
+
+
+ 829              		.cfi_offset 4, -32
+ 830              		.cfi_offset 5, -28
+ 831              		.cfi_offset 7, -24
+ 832              		.cfi_offset 8, -20
+ 833              		.cfi_offset 9, -16
+ 834              		.cfi_offset 10, -12
+ 835              		.cfi_offset 11, -8
+ 836              		.cfi_offset 14, -4
+ 837 0004 D4B0     		sub	sp, sp, #336
+ 838              	.LCFI51:
+ 839              		.cfi_def_cfa_offset 368
+ 840 0006 00AF     		add	r7, sp, #0
+ 841              	.LCFI52:
+ 842              		.cfi_def_cfa_register 7
+ 234:Core/Src/barometer.c **** 	int32_t dT;
+ 235:Core/Src/barometer.c **** 	int64_t TEMP, OFF, SENS, P;
+ 236:Core/Src/barometer.c **** 	uint32_t D1, D2;
+ 237:Core/Src/barometer.c **** 	float press, r, c;
+ 238:Core/Src/barometer.c **** 
+ 239:Core/Src/barometer.c **** 	D1 = ms5611_readRawPressure();
+ 843              		.loc 1 239 7
+ 844 0008 FFF7FEFF 		bl	ms5611_readRawPressure
+ 845 000c C7F83401 		str	r0, [r7, #308]
+ 240:Core/Src/barometer.c **** 	D2 = ms5611_readRawTemp();
+ 846              		.loc 1 240 7
+ 847 0010 FFF7FEFF 		bl	ms5611_readRawTemp
+ 848 0014 C7F83001 		str	r0, [r7, #304]
+ 241:Core/Src/barometer.c **** 
+ 242:Core/Src/barometer.c **** 	dT = D2-((long)prom[4]*256);
+ 849              		.loc 1 242 21
+ 850 0018 734B     		ldr	r3, .L56
+ 851 001a 1B89     		ldrh	r3, [r3, #8]
+ 852              		.loc 1 242 24
+ 853 001c 1B02     		lsls	r3, r3, #8
+ 854 001e 1A46     		mov	r2, r3
+ 855              		.loc 1 242 9
+ 856 0020 D7F83031 		ldr	r3, [r7, #304]
+ 857 0024 9B1A     		subs	r3, r3, r2
+ 858              		.loc 1 242 5
+ 859 0026 C7F82C31 		str	r3, [r7, #300]
+ 243:Core/Src/barometer.c **** 	TEMP = 2000 + ((int64_t)dT * prom[5])/8388608;
+ 860              		.loc 1 243 17
+ 861 002a D7F82C31 		ldr	r3, [r7, #300]
+ 862 002e DA17     		asrs	r2, r3, #31
+ 863 0030 9A46     		mov	r10, r3
+ 864 0032 9346     		mov	fp, r2
+ 865              		.loc 1 243 35
+ 866 0034 6C4B     		ldr	r3, .L56
+ 867 0036 5B89     		ldrh	r3, [r3, #10]
+ 868 0038 9BB2     		uxth	r3, r3
+ 869 003a 0022     		movs	r2, #0
+ 870 003c 1C46     		mov	r4, r3
+ 871 003e 1546     		mov	r5, r2
+ 872              		.loc 1 243 29
+ 873 0040 04FB0BF2 		mul	r2, r4, fp
+ 874 0044 0AFB05F3 		mul	r3, r10, r5
+ 875 0048 1344     		add	r3, r3, r2
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 20
+
+
+ 876 004a AAFB0489 		umull	r8, r9, r10, r4
+ 877 004e 4B44     		add	r3, r3, r9
+ 878 0050 9946     		mov	r9, r3
+ 879              		.loc 1 243 39
+ 880 0052 4246     		mov	r2, r8
+ 881 0054 4B46     		mov	r3, r9
+ 882 0056 002B     		cmp	r3, #0
+ 883 0058 07DA     		bge	.L50
+ 884 005a 6449     		ldr	r1, .L56+4
+ 885 005c 5118     		adds	r1, r2, r1
+ 886 005e 3965     		str	r1, [r7, #80]
+ 887 0060 43F10003 		adc	r3, r3, #0
+ 888 0064 7B65     		str	r3, [r7, #84]
+ 889 0066 D7E91423 		ldrd	r2, [r7, #80]
+ 890              	.L50:
+ 891 006a 4FF00000 		mov	r0, #0
+ 892 006e 4FF00001 		mov	r1, #0
+ 893 0072 D00D     		lsrs	r0, r2, #23
+ 894 0074 40EA4320 		orr	r0, r0, r3, lsl #9
+ 895 0078 D915     		asrs	r1, r3, #23
+ 896 007a 0246     		mov	r2, r0
+ 897 007c 0B46     		mov	r3, r1
+ 898              		.loc 1 243 7
+ 899 007e 12F5FA61 		adds	r1, r2, #2000
+ 900 0082 B964     		str	r1, [r7, #72]
+ 901 0084 43F10003 		adc	r3, r3, #0
+ 902 0088 FB64     		str	r3, [r7, #76]
+ 903 008a D7E91234 		ldrd	r3, [r7, #72]
+ 904 008e C7E95234 		strd	r3, [r7, #328]
+ 244:Core/Src/barometer.c **** 	OFF = (int64_t)prom[1] * 65536 + ((int64_t)prom[3] * dT ) / 128;
+ 905              		.loc 1 244 21
+ 906 0092 554B     		ldr	r3, .L56
+ 907 0094 5B88     		ldrh	r3, [r3, #2]
+ 908              		.loc 1 244 8
+ 909 0096 9BB2     		uxth	r3, r3
+ 910 0098 0022     		movs	r2, #0
+ 911 009a C7F8C030 		str	r3, [r7, #192]
+ 912 009e C7F8C420 		str	r2, [r7, #196]
+ 913              		.loc 1 244 25
+ 914 00a2 4FF00004 		mov	r4, #0
+ 915 00a6 4FF00005 		mov	r5, #0
+ 916 00aa D7E93012 		ldrd	r1, [r7, #192]
+ 917 00ae 1346     		mov	r3, r2
+ 918 00b0 1D04     		lsls	r5, r3, #16
+ 919 00b2 0B46     		mov	r3, r1
+ 920 00b4 45EA1345 		orr	r5, r5, r3, lsr #16
+ 921 00b8 0B46     		mov	r3, r1
+ 922 00ba 1C04     		lsls	r4, r3, #16
+ 923              		.loc 1 244 49
+ 924 00bc 4A4B     		ldr	r3, .L56
+ 925 00be DB88     		ldrh	r3, [r3, #6]
+ 926              		.loc 1 244 36
+ 927 00c0 9BB2     		uxth	r3, r3
+ 928 00c2 0022     		movs	r2, #0
+ 929 00c4 C7F8B830 		str	r3, [r7, #184]
+ 930 00c8 C7F8BC20 		str	r2, [r7, #188]
+ 931              		.loc 1 244 53
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 21
+
+
+ 932 00cc D7F82C31 		ldr	r3, [r7, #300]
+ 933 00d0 DA17     		asrs	r2, r3, #31
+ 934 00d2 C7F8B030 		str	r3, [r7, #176]
+ 935 00d6 C7F8B420 		str	r2, [r7, #180]
+ 936 00da D7E92E89 		ldrd	r8, [r7, #184]
+ 937 00de 4B46     		mov	r3, r9
+ 938 00e0 D7E92CAB 		ldrd	r10, [r7, #176]
+ 939 00e4 5246     		mov	r2, r10
+ 940 00e6 02FB03F2 		mul	r2, r2, r3
+ 941 00ea 5B46     		mov	r3, fp
+ 942 00ec 4146     		mov	r1, r8
+ 943 00ee 01FB03F3 		mul	r3, r1, r3
+ 944 00f2 1344     		add	r3, r3, r2
+ 945 00f4 4246     		mov	r2, r8
+ 946 00f6 5146     		mov	r1, r10
+ 947 00f8 A2FB0112 		umull	r1, r2, r2, r1
+ 948 00fc C7F8EC20 		str	r2, [r7, #236]
+ 949 0100 0A46     		mov	r2, r1
+ 950 0102 C7F8E820 		str	r2, [r7, #232]
+ 951 0106 D7F8EC20 		ldr	r2, [r7, #236]
+ 952 010a 1344     		add	r3, r3, r2
+ 953 010c C7F8EC30 		str	r3, [r7, #236]
+ 954              		.loc 1 244 60
+ 955 0110 D7E93A23 		ldrd	r2, [r7, #232]
+ 956 0114 002B     		cmp	r3, #0
+ 957 0116 07DA     		bge	.L51
+ 958 0118 12F17F01 		adds	r1, r2, #127
+ 959 011c 3964     		str	r1, [r7, #64]
+ 960 011e 43F10003 		adc	r3, r3, #0
+ 961 0122 7B64     		str	r3, [r7, #68]
+ 962 0124 D7E91023 		ldrd	r2, [r7, #64]
+ 963              	.L51:
+ 964 0128 4FF00000 		mov	r0, #0
+ 965 012c 4FF00001 		mov	r1, #0
+ 966 0130 D009     		lsrs	r0, r2, #7
+ 967 0132 40EA4360 		orr	r0, r0, r3, lsl #25
+ 968 0136 D911     		asrs	r1, r3, #7
+ 969 0138 0246     		mov	r2, r0
+ 970 013a 0B46     		mov	r3, r1
+ 971              		.loc 1 244 6
+ 972 013c A118     		adds	r1, r4, r2
+ 973 013e B963     		str	r1, [r7, #56]
+ 974 0140 45EB0303 		adc	r3, r5, r3
+ 975 0144 FB63     		str	r3, [r7, #60]
+ 976 0146 D7E90E34 		ldrd	r3, [r7, #56]
+ 977 014a C7E95034 		strd	r3, [r7, #320]
+ 245:Core/Src/barometer.c **** 	SENS = (int64_t)prom[0] * 32768 + ((int64_t)prom[2] * dT) / 256;
+ 978              		.loc 1 245 22
+ 979 014e 264B     		ldr	r3, .L56
+ 980 0150 1B88     		ldrh	r3, [r3]
+ 981              		.loc 1 245 9
+ 982 0152 9BB2     		uxth	r3, r3
+ 983 0154 0022     		movs	r2, #0
+ 984 0156 C7F8A830 		str	r3, [r7, #168]
+ 985 015a C7F8AC20 		str	r2, [r7, #172]
+ 986              		.loc 1 245 26
+ 987 015e 4FF00004 		mov	r4, #0
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 22
+
+
+ 988 0162 4FF00005 		mov	r5, #0
+ 989 0166 D7E92A12 		ldrd	r1, [r7, #168]
+ 990 016a 1346     		mov	r3, r2
+ 991 016c DD03     		lsls	r5, r3, #15
+ 992 016e 0B46     		mov	r3, r1
+ 993 0170 45EA5345 		orr	r5, r5, r3, lsr #17
+ 994 0174 0B46     		mov	r3, r1
+ 995 0176 DC03     		lsls	r4, r3, #15
+ 996              		.loc 1 245 50
+ 997 0178 1B4B     		ldr	r3, .L56
+ 998 017a 9B88     		ldrh	r3, [r3, #4]
+ 999              		.loc 1 245 37
+ 1000 017c 9BB2     		uxth	r3, r3
+ 1001 017e 0022     		movs	r2, #0
+ 1002 0180 C7F8A030 		str	r3, [r7, #160]
+ 1003 0184 C7F8A420 		str	r2, [r7, #164]
+ 1004              		.loc 1 245 54
+ 1005 0188 D7F82C31 		ldr	r3, [r7, #300]
+ 1006 018c DA17     		asrs	r2, r3, #31
+ 1007 018e C7F89830 		str	r3, [r7, #152]
+ 1008 0192 C7F89C20 		str	r2, [r7, #156]
+ 1009 0196 D7E92889 		ldrd	r8, [r7, #160]
+ 1010 019a 4B46     		mov	r3, r9
+ 1011 019c D7E926AB 		ldrd	r10, [r7, #152]
+ 1012 01a0 5246     		mov	r2, r10
+ 1013 01a2 02FB03F2 		mul	r2, r2, r3
+ 1014 01a6 5B46     		mov	r3, fp
+ 1015 01a8 4146     		mov	r1, r8
+ 1016 01aa 01FB03F3 		mul	r3, r1, r3
+ 1017 01ae 1344     		add	r3, r3, r2
+ 1018 01b0 4246     		mov	r2, r8
+ 1019 01b2 5146     		mov	r1, r10
+ 1020 01b4 A2FB0112 		umull	r1, r2, r2, r1
+ 1021 01b8 C7F8E420 		str	r2, [r7, #228]
+ 1022 01bc 0A46     		mov	r2, r1
+ 1023 01be C7F8E020 		str	r2, [r7, #224]
+ 1024 01c2 D7F8E420 		ldr	r2, [r7, #228]
+ 1025 01c6 1344     		add	r3, r3, r2
+ 1026 01c8 C7F8E430 		str	r3, [r7, #228]
+ 1027              		.loc 1 245 60
+ 1028 01cc D7E93823 		ldrd	r2, [r7, #224]
+ 1029 01d0 002B     		cmp	r3, #0
+ 1030 01d2 0DDA     		bge	.L52
+ 1031 01d4 12F1FF01 		adds	r1, r2, #255
+ 1032 01d8 3963     		str	r1, [r7, #48]
+ 1033 01da 43F10003 		adc	r3, r3, #0
+ 1034 01de 7B63     		str	r3, [r7, #52]
+ 1035 01e0 D7E90C23 		ldrd	r2, [r7, #48]
+ 1036 01e4 04E0     		b	.L57
+ 1037              	.L58:
+ 1038 01e6 00BF     		.align	2
+ 1039              	.L56:
+ 1040 01e8 00000000 		.word	prom
+ 1041 01ec FFFF7F00 		.word	8388607
+ 1042              	.L57:
+ 1043              	.L52:
+ 1044 01f0 4FF00000 		mov	r0, #0
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 23
+
+
+ 1045 01f4 4FF00001 		mov	r1, #0
+ 1046 01f8 100A     		lsrs	r0, r2, #8
+ 1047 01fa 40EA0360 		orr	r0, r0, r3, lsl #24
+ 1048 01fe 1912     		asrs	r1, r3, #8
+ 1049 0200 0246     		mov	r2, r0
+ 1050 0202 0B46     		mov	r3, r1
+ 1051              		.loc 1 245 7
+ 1052 0204 A118     		adds	r1, r4, r2
+ 1053 0206 B962     		str	r1, [r7, #40]
+ 1054 0208 45EB0303 		adc	r3, r5, r3
+ 1055 020c FB62     		str	r3, [r7, #44]
+ 1056 020e D7E90A34 		ldrd	r3, [r7, #40]
+ 1057 0212 C7E94E34 		strd	r3, [r7, #312]
+ 246:Core/Src/barometer.c **** 
+ 247:Core/Src/barometer.c **** 	if (TEMP < 2000){   // second order temperature compensation
+ 1058              		.loc 1 247 5
+ 1059 0216 D7E95223 		ldrd	r2, [r7, #328]
+ 1060 021a B2F5FA6F 		cmp	r2, #2000
+ 1061 021e 73F10003 		sbcs	r3, r3, #0
+ 1062 0222 80F2D480 		bge	.L53
+ 1063              	.LBB2:
+ 248:Core/Src/barometer.c **** 		int64_t T2 = (((int64_t)dT)*dT) >> 31;
+ 1064              		.loc 1 248 18
+ 1065 0226 D7F82C31 		ldr	r3, [r7, #300]
+ 1066 022a DA17     		asrs	r2, r3, #31
+ 1067 022c C7F89030 		str	r3, [r7, #144]
+ 1068 0230 C7F89420 		str	r2, [r7, #148]
+ 1069              		.loc 1 248 30
+ 1070 0234 D7F82C31 		ldr	r3, [r7, #300]
+ 1071 0238 DA17     		asrs	r2, r3, #31
+ 1072 023a C7F88830 		str	r3, [r7, #136]
+ 1073 023e C7F88C20 		str	r2, [r7, #140]
+ 1074 0242 D7E92445 		ldrd	r4, [r7, #144]
+ 1075 0246 2B46     		mov	r3, r5
+ 1076 0248 D7E92289 		ldrd	r8, [r7, #136]
+ 1077 024c 4246     		mov	r2, r8
+ 1078 024e 02FB03F2 		mul	r2, r2, r3
+ 1079 0252 4B46     		mov	r3, r9
+ 1080 0254 2146     		mov	r1, r4
+ 1081 0256 01FB03F3 		mul	r3, r1, r3
+ 1082 025a 1344     		add	r3, r3, r2
+ 1083 025c 2246     		mov	r2, r4
+ 1084 025e 4146     		mov	r1, r8
+ 1085 0260 A2FB0112 		umull	r1, r2, r2, r1
+ 1086 0264 C7F8DC20 		str	r2, [r7, #220]
+ 1087 0268 0A46     		mov	r2, r1
+ 1088 026a C7F8D820 		str	r2, [r7, #216]
+ 1089 026e D7F8DC20 		ldr	r2, [r7, #220]
+ 1090 0272 1344     		add	r3, r3, r2
+ 1091 0274 C7F8DC30 		str	r3, [r7, #220]
+ 1092              		.loc 1 248 11
+ 1093 0278 4FF00002 		mov	r2, #0
+ 1094 027c 4FF00003 		mov	r3, #0
+ 1095 0280 D7E93645 		ldrd	r4, [r7, #216]
+ 1096 0284 2146     		mov	r1, r4
+ 1097 0286 CA0F     		lsrs	r2, r1, #31
+ 1098 0288 2946     		mov	r1, r5
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 24
+
+
+ 1099 028a 42EA4102 		orr	r2, r2, r1, lsl #1
+ 1100 028e 2946     		mov	r1, r5
+ 1101 0290 CB17     		asrs	r3, r1, #31
+ 1102 0292 C7E94823 		strd	r2, [r7, #288]
+ 249:Core/Src/barometer.c **** 		int64_t Aux_64 = (TEMP-2000)*(TEMP-2000);
+ 1103              		.loc 1 249 25
+ 1104 0296 D7E95223 		ldrd	r2, [r7, #328]
+ 1105 029a B2F5FA61 		subs	r1, r2, #2000
+ 1106 029e C7F88010 		str	r1, [r7, #128]
+ 1107 02a2 43F1FF33 		adc	r3, r3, #-1
+ 1108 02a6 C7F88430 		str	r3, [r7, #132]
+ 1109              		.loc 1 249 37
+ 1110 02aa D7E95223 		ldrd	r2, [r7, #328]
+ 1111 02ae B2F5FA61 		subs	r1, r2, #2000
+ 1112 02b2 B967     		str	r1, [r7, #120]
+ 1113 02b4 43F1FF33 		adc	r3, r3, #-1
+ 1114 02b8 FB67     		str	r3, [r7, #124]
+ 1115              		.loc 1 249 11
+ 1116 02ba D7E92045 		ldrd	r4, [r7, #128]
+ 1117 02be 2B46     		mov	r3, r5
+ 1118 02c0 D7E91E89 		ldrd	r8, [r7, #120]
+ 1119 02c4 4246     		mov	r2, r8
+ 1120 02c6 02FB03F2 		mul	r2, r2, r3
+ 1121 02ca 4B46     		mov	r3, r9
+ 1122 02cc 2146     		mov	r1, r4
+ 1123 02ce 01FB03F3 		mul	r3, r1, r3
+ 1124 02d2 1344     		add	r3, r3, r2
+ 1125 02d4 2246     		mov	r2, r4
+ 1126 02d6 4146     		mov	r1, r8
+ 1127 02d8 A2FB0112 		umull	r1, r2, r2, r1
+ 1128 02dc C7F8CC20 		str	r2, [r7, #204]
+ 1129 02e0 0A46     		mov	r2, r1
+ 1130 02e2 C7F8C820 		str	r2, [r7, #200]
+ 1131 02e6 D7F8CC20 		ldr	r2, [r7, #204]
+ 1132 02ea 1344     		add	r3, r3, r2
+ 1133 02ec C7F8CC30 		str	r3, [r7, #204]
+ 1134 02f0 D7E93234 		ldrd	r3, [r7, #200]
+ 1135 02f4 C7E94634 		strd	r3, [r7, #280]
+ 1136 02f8 C7E94634 		strd	r3, [r7, #280]
+ 250:Core/Src/barometer.c **** 		int64_t OFF2 = (5*Aux_64)>>1;
+ 1137              		.loc 1 250 20
+ 1138 02fc D7E94645 		ldrd	r4, [r7, #280]
+ 1139 0300 2246     		mov	r2, r4
+ 1140 0302 2B46     		mov	r3, r5
+ 1141 0304 4FF00000 		mov	r0, #0
+ 1142 0308 4FF00001 		mov	r1, #0
+ 1143 030c 9900     		lsls	r1, r3, #2
+ 1144 030e 41EA9271 		orr	r1, r1, r2, lsr #30
+ 1145 0312 9000     		lsls	r0, r2, #2
+ 1146 0314 0246     		mov	r2, r0
+ 1147 0316 0B46     		mov	r3, r1
+ 1148 0318 1119     		adds	r1, r2, r4
+ 1149 031a 3967     		str	r1, [r7, #112]
+ 1150 031c 6B41     		adcs	r3, r3, r5
+ 1151 031e 7B67     		str	r3, [r7, #116]
+ 1152              		.loc 1 250 11
+ 1153 0320 4FF00002 		mov	r2, #0
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 25
+
+
+ 1154 0324 4FF00003 		mov	r3, #0
+ 1155 0328 D7E91C45 		ldrd	r4, [r7, #112]
+ 1156 032c 2146     		mov	r1, r4
+ 1157 032e 4A08     		lsrs	r2, r1, #1
+ 1158 0330 2946     		mov	r1, r5
+ 1159 0332 42EAC172 		orr	r2, r2, r1, lsl #31
+ 1160 0336 2946     		mov	r1, r5
+ 1161 0338 4B10     		asrs	r3, r1, #1
+ 1162 033a C7E94423 		strd	r2, [r7, #272]
+ 251:Core/Src/barometer.c **** 		int64_t SENS2 = (5*Aux_64)>>2;
+ 1163              		.loc 1 251 21
+ 1164 033e D7E94645 		ldrd	r4, [r7, #280]
+ 1165 0342 2246     		mov	r2, r4
+ 1166 0344 2B46     		mov	r3, r5
+ 1167 0346 4FF00000 		mov	r0, #0
+ 1168 034a 4FF00001 		mov	r1, #0
+ 1169 034e 9900     		lsls	r1, r3, #2
+ 1170 0350 41EA9271 		orr	r1, r1, r2, lsr #30
+ 1171 0354 9000     		lsls	r0, r2, #2
+ 1172 0356 0246     		mov	r2, r0
+ 1173 0358 0B46     		mov	r3, r1
+ 1174 035a 1119     		adds	r1, r2, r4
+ 1175 035c B966     		str	r1, [r7, #104]
+ 1176 035e 6B41     		adcs	r3, r3, r5
+ 1177 0360 FB66     		str	r3, [r7, #108]
+ 1178              		.loc 1 251 11
+ 1179 0362 4FF00002 		mov	r2, #0
+ 1180 0366 4FF00003 		mov	r3, #0
+ 1181 036a D7E91A45 		ldrd	r4, [r7, #104]
+ 1182 036e 2146     		mov	r1, r4
+ 1183 0370 8A08     		lsrs	r2, r1, #2
+ 1184 0372 2946     		mov	r1, r5
+ 1185 0374 42EA8172 		orr	r2, r2, r1, lsl #30
+ 1186 0378 2946     		mov	r1, r5
+ 1187 037a 8B10     		asrs	r3, r1, #2
+ 1188 037c C7E94223 		strd	r2, [r7, #264]
+ 252:Core/Src/barometer.c **** 		TEMP = TEMP - T2;
+ 1189              		.loc 1 252 8
+ 1190 0380 D7E95201 		ldrd	r0, [r7, #328]
+ 1191 0384 D7E94823 		ldrd	r2, [r7, #288]
+ 1192 0388 841A     		subs	r4, r0, r2
+ 1193 038a 3C62     		str	r4, [r7, #32]
+ 1194 038c 61EB0303 		sbc	r3, r1, r3
+ 1195 0390 7B62     		str	r3, [r7, #36]
+ 1196 0392 D7E90834 		ldrd	r3, [r7, #32]
+ 1197 0396 C7E95234 		strd	r3, [r7, #328]
+ 253:Core/Src/barometer.c **** 		OFF = OFF - OFF2;
+ 1198              		.loc 1 253 7
+ 1199 039a D7E95001 		ldrd	r0, [r7, #320]
+ 1200 039e D7E94423 		ldrd	r2, [r7, #272]
+ 1201 03a2 841A     		subs	r4, r0, r2
+ 1202 03a4 BC61     		str	r4, [r7, #24]
+ 1203 03a6 61EB0303 		sbc	r3, r1, r3
+ 1204 03aa FB61     		str	r3, [r7, #28]
+ 1205 03ac D7E90634 		ldrd	r3, [r7, #24]
+ 1206 03b0 C7E95034 		strd	r3, [r7, #320]
+ 254:Core/Src/barometer.c **** 		SENS = SENS - SENS2;
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 26
+
+
+ 1207              		.loc 1 254 8
+ 1208 03b4 D7E94E01 		ldrd	r0, [r7, #312]
+ 1209 03b8 D7E94223 		ldrd	r2, [r7, #264]
+ 1210 03bc 841A     		subs	r4, r0, r2
+ 1211 03be 3C61     		str	r4, [r7, #16]
+ 1212 03c0 61EB0303 		sbc	r3, r1, r3
+ 1213 03c4 7B61     		str	r3, [r7, #20]
+ 1214 03c6 D7E90434 		ldrd	r3, [r7, #16]
+ 1215 03ca C7E94E34 		strd	r3, [r7, #312]
+ 1216              	.L53:
+ 1217              	.LBE2:
+ 255:Core/Src/barometer.c **** 	}
+ 256:Core/Src/barometer.c **** 
+ 257:Core/Src/barometer.c **** 	P = (D1*SENS/2097152 - OFF)/32768;
+ 1218              		.loc 1 257 9
+ 1219 03ce D7F83431 		ldr	r3, [r7, #308]
+ 1220 03d2 0022     		movs	r2, #0
+ 1221 03d4 3B66     		str	r3, [r7, #96]
+ 1222 03d6 7A66     		str	r2, [r7, #100]
+ 1223 03d8 D7F83831 		ldr	r3, [r7, #312]
+ 1224 03dc D7E91845 		ldrd	r4, [r7, #96]
+ 1225 03e0 2A46     		mov	r2, r5
+ 1226 03e2 02FB03F2 		mul	r2, r2, r3
+ 1227 03e6 D7F83C31 		ldr	r3, [r7, #316]
+ 1228 03ea 2146     		mov	r1, r4
+ 1229 03ec 01FB03F3 		mul	r3, r1, r3
+ 1230 03f0 1344     		add	r3, r3, r2
+ 1231 03f2 D7F83821 		ldr	r2, [r7, #312]
+ 1232 03f6 2146     		mov	r1, r4
+ 1233 03f8 A2FB0112 		umull	r1, r2, r2, r1
+ 1234 03fc C7F8D420 		str	r2, [r7, #212]
+ 1235 0400 0A46     		mov	r2, r1
+ 1236 0402 C7F8D020 		str	r2, [r7, #208]
+ 1237 0406 D7F8D420 		ldr	r2, [r7, #212]
+ 1238 040a 1344     		add	r3, r3, r2
+ 1239 040c C7F8D430 		str	r3, [r7, #212]
+ 1240              		.loc 1 257 14
+ 1241 0410 D7E93423 		ldrd	r2, [r7, #208]
+ 1242 0414 002B     		cmp	r3, #0
+ 1243 0416 07DA     		bge	.L54
+ 1244 0418 3F49     		ldr	r1, .L59+8
+ 1245 041a 5118     		adds	r1, r2, r1
+ 1246 041c B960     		str	r1, [r7, #8]
+ 1247 041e 43F10003 		adc	r3, r3, #0
+ 1248 0422 FB60     		str	r3, [r7, #12]
+ 1249 0424 D7E90223 		ldrd	r2, [r7, #8]
+ 1250              	.L54:
+ 1251 0428 4FF00000 		mov	r0, #0
+ 1252 042c 4FF00001 		mov	r1, #0
+ 1253 0430 500D     		lsrs	r0, r2, #21
+ 1254 0432 40EAC320 		orr	r0, r0, r3, lsl #11
+ 1255 0436 5915     		asrs	r1, r3, #21
+ 1256              		.loc 1 257 23
+ 1257 0438 D7E95023 		ldrd	r2, [r7, #320]
+ 1258 043c 841A     		subs	r4, r0, r2
+ 1259 043e BC65     		str	r4, [r7, #88]
+ 1260 0440 61EB0303 		sbc	r3, r1, r3
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 27
+
+
+ 1261 0444 FB65     		str	r3, [r7, #92]
+ 1262              		.loc 1 257 4
+ 1263 0446 D7E91623 		ldrd	r2, [r7, #88]
+ 1264 044a 002B     		cmp	r3, #0
+ 1265 044c 08DA     		bge	.L55
+ 1266 044e 47F6FF71 		movw	r1, #32767
+ 1267 0452 5118     		adds	r1, r2, r1
+ 1268 0454 3960     		str	r1, [r7]
+ 1269 0456 43F10003 		adc	r3, r3, #0
+ 1270 045a 7B60     		str	r3, [r7, #4]
+ 1271 045c D7E90023 		ldrd	r2, [r7]
+ 1272              	.L55:
+ 1273 0460 4FF00000 		mov	r0, #0
+ 1274 0464 4FF00001 		mov	r1, #0
+ 1275 0468 D00B     		lsrs	r0, r2, #15
+ 1276 046a 40EA4340 		orr	r0, r0, r3, lsl #17
+ 1277 046e D913     		asrs	r1, r3, #15
+ 1278 0470 C7E94001 		strd	r0, [r7, #256]
+ 258:Core/Src/barometer.c **** 	temperature = TEMP;
+ 1279              		.loc 1 258 14
+ 1280 0474 D7F84831 		ldr	r3, [r7, #328]
+ 1281 0478 284A     		ldr	r2, .L59+12
+ 1282 047a 1360     		str	r3, [r2]
+ 259:Core/Src/barometer.c **** 	pressure = P;
+ 1283              		.loc 1 259 11
+ 1284 047c D7F80031 		ldr	r3, [r7, #256]
+ 1285 0480 274A     		ldr	r2, .L59+16
+ 1286 0482 1360     		str	r3, [r2]
+ 260:Core/Src/barometer.c **** 
+ 261:Core/Src/barometer.c **** 	press = (float)pressure;
+ 1287              		.loc 1 261 10
+ 1288 0484 264B     		ldr	r3, .L59+16
+ 1289 0486 1B68     		ldr	r3, [r3]
+ 1290              		.loc 1 261 8
+ 1291 0488 07EE903A 		vmov	s15, r3	@ int
+ 1292 048c F8EEE77A 		vcvt.f32.s32	s15, s15
+ 1293 0490 C7ED3F7A 		vstr.32	s15, [r7, #252]
+ 262:Core/Src/barometer.c **** 	r= press/101325.0;
+ 1294              		.loc 1 262 3
+ 1295 0494 97ED3F7A 		vldr.32	s14, [r7, #252]
+ 1296 0498 DFED226A 		vldr.32	s13, .L59+20
+ 1297 049c C7EE267A 		vdiv.f32	s15, s14, s13
+ 1298 04a0 C7ED3E7A 		vstr.32	s15, [r7, #248]
+ 263:Core/Src/barometer.c **** 	c = 1.0/5.255;
+ 1299              		.loc 1 263 4
+ 1300 04a4 204B     		ldr	r3, .L59+24
+ 1301 04a6 C7F8F430 		str	r3, [r7, #244]	@ float
+ 264:Core/Src/barometer.c **** 	altitude = (1 - pow(r,c))*44330.77;
+ 1302              		.loc 1 264 18
+ 1303 04aa D7F8F800 		ldr	r0, [r7, #248]	@ float
+ 1304 04ae FFF7FEFF 		bl	__aeabi_f2d
+ 1305 04b2 0446     		mov	r4, r0
+ 1306 04b4 0D46     		mov	r5, r1
+ 1307 04b6 D7F8F400 		ldr	r0, [r7, #244]	@ float
+ 1308 04ba FFF7FEFF 		bl	__aeabi_f2d
+ 1309 04be 0246     		mov	r2, r0
+ 1310 04c0 0B46     		mov	r3, r1
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 28
+
+
+ 1311 04c2 43EC112B 		vmov	d1, r2, r3
+ 1312 04c6 45EC104B 		vmov	d0, r4, r5
+ 1313 04ca FFF7FEFF 		bl	pow
+ 1314 04ce 53EC102B 		vmov	r2, r3, d0
+ 1315              		.loc 1 264 16
+ 1316 04d2 4FF00000 		mov	r0, #0
+ 1317 04d6 1549     		ldr	r1, .L59+28
+ 1318 04d8 FFF7FEFF 		bl	__aeabi_dsub
+ 1319 04dc 0246     		mov	r2, r0
+ 1320 04de 0B46     		mov	r3, r1
+ 1321 04e0 1046     		mov	r0, r2
+ 1322 04e2 1946     		mov	r1, r3
+ 1323              		.loc 1 264 27
+ 1324 04e4 0AA3     		adr	r3, .L59
+ 1325 04e6 D3E90023 		ldrd	r2, [r3]
+ 1326 04ea FFF7FEFF 		bl	__aeabi_dmul
+ 1327 04ee 0246     		mov	r2, r0
+ 1328 04f0 0B46     		mov	r3, r1
+ 1329 04f2 1046     		mov	r0, r2
+ 1330 04f4 1946     		mov	r1, r3
+ 1331 04f6 FFF7FEFF 		bl	__aeabi_d2f
+ 1332 04fa 0346     		mov	r3, r0	@ float
+ 1333              		.loc 1 264 11
+ 1334 04fc 0C4A     		ldr	r2, .L59+32
+ 1335 04fe 1360     		str	r3, [r2]	@ float
+ 265:Core/Src/barometer.c **** }
+ 1336              		.loc 1 265 1
+ 1337 0500 00BF     		nop
+ 1338 0502 07F5A877 		add	r7, r7, #336
+ 1339              	.LCFI53:
+ 1340              		.cfi_def_cfa_offset 32
+ 1341 0506 BD46     		mov	sp, r7
+ 1342              	.LCFI54:
+ 1343              		.cfi_def_cfa_register 13
+ 1344              		@ sp needed
+ 1345 0508 BDE8B08F 		pop	{r4, r5, r7, r8, r9, r10, fp, pc}
+ 1346              	.L60:
+ 1347 050c AFF30080 		.align	3
+ 1348              	.L59:
+ 1349 0510 3D0AD7A3 		.word	-1546188227
+ 1350 0514 58A5E540 		.word	1088791896
+ 1351 0518 FFFF1F00 		.word	2097151
+ 1352 051c 00000000 		.word	temperature
+ 1353 0520 00000000 		.word	pressure
+ 1354 0524 80E6C547 		.word	1204151936
+ 1355 0528 AEDC423E 		.word	1044569262
+ 1356 052c 0000F03F 		.word	1072693248
+ 1357 0530 00000000 		.word	altitude
+ 1358              		.cfi_endproc
+ 1359              	.LFE141:
+ 1361              		.text
+ 1362              	.Letext0:
+ 1363              		.file 2 "c:\\gcc-arm-none-eabi\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1364              		.file 3 "c:\\gcc-arm-none-eabi\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1365              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h"
+ 1366              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 1367              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 29
+
+
+ 1368              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 1369              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
+ 1370              		.file 9 "Core/Inc/barometer.h"
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 30
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 barometer.c
+C:\msys64\tmp\ccVQgTXb.s:20     .bss.prom:00000000 $d
+C:\msys64\tmp\ccVQgTXb.s:23     .bss.prom:00000000 prom
+C:\msys64\tmp\ccVQgTXb.s:28     .data.pressAddr:00000000 pressAddr
+C:\msys64\tmp\ccVQgTXb.s:33     .data.tempAddr:00000000 tempAddr
+C:\msys64\tmp\ccVQgTXb.s:36     .data.convDelay:00000000 $d
+C:\msys64\tmp\ccVQgTXb.s:39     .data.convDelay:00000000 convDelay
+C:\msys64\tmp\ccVQgTXb.s:42     .bss.temperature:00000000 $d
+C:\msys64\tmp\ccVQgTXb.s:45     .bss.temperature:00000000 temperature
+C:\msys64\tmp\ccVQgTXb.s:48     .bss.pressure:00000000 $d
+C:\msys64\tmp\ccVQgTXb.s:51     .bss.pressure:00000000 pressure
+C:\msys64\tmp\ccVQgTXb.s:54     .bss.altitude:00000000 $d
+C:\msys64\tmp\ccVQgTXb.s:57     .bss.altitude:00000000 altitude
+C:\msys64\tmp\ccVQgTXb.s:60     .text.ms5611_init:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:65     .text.ms5611_init:00000000 ms5611_init
+C:\msys64\tmp\ccVQgTXb.s:159    .text.ms5611_write:00000000 ms5611_write
+C:\msys64\tmp\ccVQgTXb.s:218    .text.ms5611_read16bits:00000000 ms5611_read16bits
+C:\msys64\tmp\ccVQgTXb.s:148    .text.ms5611_init:00000078 $d
+C:\msys64\tmp\ccVQgTXb.s:154    .text.ms5611_write:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:207    .text.ms5611_write:00000034 $d
+C:\msys64\tmp\ccVQgTXb.s:213    .text.ms5611_read16bits:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:284    .text.ms5611_read16bits:0000004c $d
+C:\msys64\tmp\ccVQgTXb.s:290    .text.ms5611_read24bits:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:295    .text.ms5611_read24bits:00000000 ms5611_read24bits
+C:\msys64\tmp\ccVQgTXb.s:362    .text.ms5611_read24bits:0000004c $d
+C:\msys64\tmp\ccVQgTXb.s:368    .text.ms5611_readRawTemp:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:373    .text.ms5611_readRawTemp:00000000 ms5611_readRawTemp
+C:\msys64\tmp\ccVQgTXb.s:419    .text.ms5611_readRawTemp:0000002c $d
+C:\msys64\tmp\ccVQgTXb.s:425    .text.ms5611_readRawPressure:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:430    .text.ms5611_readRawPressure:00000000 ms5611_readRawPressure
+C:\msys64\tmp\ccVQgTXb.s:476    .text.ms5611_readRawPressure:0000002c $d
+C:\msys64\tmp\ccVQgTXb.s:482    .text.Barometer_init:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:488    .text.Barometer_init:00000000 Barometer_init
+C:\msys64\tmp\ccVQgTXb.s:511    .text.Barometer_setOSR:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:517    .text.Barometer_setOSR:00000000 Barometer_setOSR
+C:\msys64\tmp\ccVQgTXb.s:545    .text.Barometer_setOSR:00000018 $d
+C:\msys64\tmp\ccVQgTXb.s:549    .text.Barometer_setOSR:00000028 $t
+C:\msys64\tmp\ccVQgTXb.s:643    .text.Barometer_setOSR:00000098 $d
+C:\msys64\tmp\ccVQgTXb.s:650    .text.Barometer_getTemp:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:656    .text.Barometer_getTemp:00000000 Barometer_getTemp
+C:\msys64\tmp\ccVQgTXb.s:820    .text.Barometer_calculate:00000000 Barometer_calculate
+C:\msys64\tmp\ccVQgTXb.s:698    .text.Barometer_getTemp:00000020 $d
+C:\msys64\tmp\ccVQgTXb.s:703    .text.Barometer_getPressure:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:709    .text.Barometer_getPressure:00000000 Barometer_getPressure
+C:\msys64\tmp\ccVQgTXb.s:751    .text.Barometer_getPressure:00000020 $d
+C:\msys64\tmp\ccVQgTXb.s:756    .text.Barometer_getAltitude:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:762    .text.Barometer_getAltitude:00000000 Barometer_getAltitude
+C:\msys64\tmp\ccVQgTXb.s:805    .text.Barometer_getAltitude:00000028 $d
+C:\msys64\tmp\ccVQgTXb.s:814    .text.Barometer_calculate:00000000 $t
+C:\msys64\tmp\ccVQgTXb.s:1040   .text.Barometer_calculate:000001e8 $d
+C:\msys64\tmp\ccVQgTXb.s:1044   .text.Barometer_calculate:000001f0 $t
+C:\msys64\tmp\ccVQgTXb.s:1349   .text.Barometer_calculate:00000510 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_Delay
+ARM GAS  C:\msys64\tmp\ccVQgTXb.s 			page 31
+
+
+HAL_SPI_Transmit
+hspi1
+HAL_SPI_TransmitReceive
+__aeabi_f2d
+__aeabi_dsub
+__aeabi_dmul
+__aeabi_d2f
+pow

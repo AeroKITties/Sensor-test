@@ -1,0 +1,2365 @@
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 6
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"MPU9250.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.global	HSPI
+  20              		.section	.bss.HSPI,"aw",%nobits
+  21              		.align	2
+  24              	HSPI:
+  25 0000 00000000 		.space	4
+  26              		.global	READWRITE_CMD
+  27              		.section	.rodata.READWRITE_CMD,"a"
+  30              	READWRITE_CMD:
+  31 0000 80       		.byte	-128
+  32              		.global	MULTIPLEBYTE_CMD
+  33              		.section	.rodata.MULTIPLEBYTE_CMD,"a"
+  36              	MULTIPLEBYTE_CMD:
+  37 0000 40       		.byte	64
+  38              		.global	DUMMY_BYTE
+  39              		.section	.rodata.DUMMY_BYTE,"a"
+  42              	DUMMY_BYTE:
+  43 0000 00       		.space	1
+  44              		.global	_address
+  45              		.section	.rodata._address,"a"
+  48              	_address:
+  49 0000 D0       		.byte	-48
+  50              		.global	_i2cRate
+  51              		.section	.rodata._i2cRate,"a"
+  52              		.align	2
+  55              	_i2cRate:
+  56 0000 801A0600 		.word	400000
+  57              		.global	ACCEL_OUT
+  58              		.section	.rodata.ACCEL_OUT,"a"
+  61              	ACCEL_OUT:
+  62 0000 3B       		.byte	59
+  63              		.global	GYRO_OUT
+  64              		.section	.rodata.GYRO_OUT,"a"
+  67              	GYRO_OUT:
+  68 0000 43       		.byte	67
+  69              		.global	TEMP_OUT
+  70              		.section	.rodata.TEMP_OUT,"a"
+  73              	TEMP_OUT:
+  74 0000 41       		.byte	65
+  75              		.global	EXT_SENS_DATA_00
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 2
+
+
+  76              		.section	.rodata.EXT_SENS_DATA_00,"a"
+  79              	EXT_SENS_DATA_00:
+  80 0000 49       		.byte	73
+  81              		.global	ACCEL_CONFIG
+  82              		.section	.rodata.ACCEL_CONFIG,"a"
+  85              	ACCEL_CONFIG:
+  86 0000 1C       		.byte	28
+  87              		.global	ACCEL_FS_SEL_2G
+  88              		.section	.rodata.ACCEL_FS_SEL_2G,"a"
+  91              	ACCEL_FS_SEL_2G:
+  92 0000 00       		.space	1
+  93              		.global	ACCEL_FS_SEL_4G
+  94              		.section	.rodata.ACCEL_FS_SEL_4G,"a"
+  97              	ACCEL_FS_SEL_4G:
+  98 0000 08       		.byte	8
+  99              		.global	ACCEL_FS_SEL_8G
+ 100              		.section	.rodata.ACCEL_FS_SEL_8G,"a"
+ 103              	ACCEL_FS_SEL_8G:
+ 104 0000 10       		.byte	16
+ 105              		.global	ACCEL_FS_SEL_16G
+ 106              		.section	.rodata.ACCEL_FS_SEL_16G,"a"
+ 109              	ACCEL_FS_SEL_16G:
+ 110 0000 18       		.byte	24
+ 111              		.global	GYRO_CONFIG
+ 112              		.section	.rodata.GYRO_CONFIG,"a"
+ 115              	GYRO_CONFIG:
+ 116 0000 1B       		.byte	27
+ 117              		.global	GYRO_FS_SEL_250DPS
+ 118              		.section	.rodata.GYRO_FS_SEL_250DPS,"a"
+ 121              	GYRO_FS_SEL_250DPS:
+ 122 0000 00       		.space	1
+ 123              		.global	GYRO_FS_SEL_500DPS
+ 124              		.section	.rodata.GYRO_FS_SEL_500DPS,"a"
+ 127              	GYRO_FS_SEL_500DPS:
+ 128 0000 08       		.byte	8
+ 129              		.global	GYRO_FS_SEL_1000DPS
+ 130              		.section	.rodata.GYRO_FS_SEL_1000DPS,"a"
+ 133              	GYRO_FS_SEL_1000DPS:
+ 134 0000 10       		.byte	16
+ 135              		.global	GYRO_FS_SEL_2000DPS
+ 136              		.section	.rodata.GYRO_FS_SEL_2000DPS,"a"
+ 139              	GYRO_FS_SEL_2000DPS:
+ 140 0000 18       		.byte	24
+ 141              		.global	ACCEL_CONFIG2
+ 142              		.section	.rodata.ACCEL_CONFIG2,"a"
+ 145              	ACCEL_CONFIG2:
+ 146 0000 1D       		.byte	29
+ 147              		.global	DLPF_184
+ 148              		.section	.rodata.DLPF_184,"a"
+ 151              	DLPF_184:
+ 152 0000 01       		.byte	1
+ 153              		.global	DLPF_92
+ 154              		.section	.rodata.DLPF_92,"a"
+ 157              	DLPF_92:
+ 158 0000 02       		.byte	2
+ 159              		.global	DLPF_41
+ 160              		.section	.rodata.DLPF_41,"a"
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 3
+
+
+ 163              	DLPF_41:
+ 164 0000 03       		.byte	3
+ 165              		.global	DLPF_20
+ 166              		.section	.rodata.DLPF_20,"a"
+ 169              	DLPF_20:
+ 170 0000 04       		.byte	4
+ 171              		.global	DLPF_10
+ 172              		.section	.rodata.DLPF_10,"a"
+ 175              	DLPF_10:
+ 176 0000 05       		.byte	5
+ 177              		.global	DLPF_5
+ 178              		.section	.rodata.DLPF_5,"a"
+ 181              	DLPF_5:
+ 182 0000 06       		.byte	6
+ 183              		.global	CONFIG
+ 184              		.section	.rodata.CONFIG,"a"
+ 187              	CONFIG:
+ 188 0000 1A       		.byte	26
+ 189              		.global	SMPDIV
+ 190              		.section	.rodata.SMPDIV,"a"
+ 193              	SMPDIV:
+ 194 0000 19       		.byte	25
+ 195              		.global	INT_PIN_CFG
+ 196              		.section	.rodata.INT_PIN_CFG,"a"
+ 199              	INT_PIN_CFG:
+ 200 0000 37       		.byte	55
+ 201              		.global	INT_ENABLE
+ 202              		.section	.rodata.INT_ENABLE,"a"
+ 205              	INT_ENABLE:
+ 206 0000 38       		.byte	56
+ 207              		.global	INT_DISABLE
+ 208              		.section	.rodata.INT_DISABLE,"a"
+ 211              	INT_DISABLE:
+ 212 0000 00       		.space	1
+ 213              		.global	INT_PULSE_50US
+ 214              		.section	.rodata.INT_PULSE_50US,"a"
+ 217              	INT_PULSE_50US:
+ 218 0000 00       		.space	1
+ 219              		.global	INT_WOM_EN
+ 220              		.section	.rodata.INT_WOM_EN,"a"
+ 223              	INT_WOM_EN:
+ 224 0000 40       		.byte	64
+ 225              		.global	INT_RAW_RDY_EN
+ 226              		.section	.rodata.INT_RAW_RDY_EN,"a"
+ 229              	INT_RAW_RDY_EN:
+ 230 0000 01       		.byte	1
+ 231              		.global	PWR_MGMNT_1
+ 232              		.section	.rodata.PWR_MGMNT_1,"a"
+ 235              	PWR_MGMNT_1:
+ 236 0000 6B       		.byte	107
+ 237              		.global	PWR_CYCLE
+ 238              		.section	.rodata.PWR_CYCLE,"a"
+ 241              	PWR_CYCLE:
+ 242 0000 20       		.byte	32
+ 243              		.global	PWR_RESET
+ 244              		.section	.rodata.PWR_RESET,"a"
+ 247              	PWR_RESET:
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 4
+
+
+ 248 0000 80       		.byte	-128
+ 249              		.global	CLOCK_SEL_PLL
+ 250              		.section	.rodata.CLOCK_SEL_PLL,"a"
+ 253              	CLOCK_SEL_PLL:
+ 254 0000 01       		.byte	1
+ 255              		.global	PWR_MGMNT_2
+ 256              		.section	.rodata.PWR_MGMNT_2,"a"
+ 259              	PWR_MGMNT_2:
+ 260 0000 6C       		.byte	108
+ 261              		.global	SEN_ENABLE
+ 262              		.section	.rodata.SEN_ENABLE,"a"
+ 265              	SEN_ENABLE:
+ 266 0000 00       		.space	1
+ 267              		.global	DIS_GYRO
+ 268              		.section	.rodata.DIS_GYRO,"a"
+ 271              	DIS_GYRO:
+ 272 0000 07       		.byte	7
+ 273              		.global	USER_CTRL
+ 274              		.section	.rodata.USER_CTRL,"a"
+ 277              	USER_CTRL:
+ 278 0000 6A       		.byte	106
+ 279              		.global	I2C_MST_EN
+ 280              		.section	.rodata.I2C_MST_EN,"a"
+ 283              	I2C_MST_EN:
+ 284 0000 20       		.byte	32
+ 285              		.global	I2C_MST_CLK
+ 286              		.section	.rodata.I2C_MST_CLK,"a"
+ 289              	I2C_MST_CLK:
+ 290 0000 0D       		.byte	13
+ 291              		.global	I2C_MST_CTRL
+ 292              		.section	.rodata.I2C_MST_CTRL,"a"
+ 295              	I2C_MST_CTRL:
+ 296 0000 24       		.byte	36
+ 297              		.global	I2C_SLV0_ADDR
+ 298              		.section	.rodata.I2C_SLV0_ADDR,"a"
+ 301              	I2C_SLV0_ADDR:
+ 302 0000 25       		.byte	37
+ 303              		.global	I2C_SLV0_REG
+ 304              		.section	.rodata.I2C_SLV0_REG,"a"
+ 307              	I2C_SLV0_REG:
+ 308 0000 26       		.byte	38
+ 309              		.global	I2C_SLV0_DO
+ 310              		.section	.rodata.I2C_SLV0_DO,"a"
+ 313              	I2C_SLV0_DO:
+ 314 0000 63       		.byte	99
+ 315              		.global	I2C_SLV0_CTRL
+ 316              		.section	.rodata.I2C_SLV0_CTRL,"a"
+ 319              	I2C_SLV0_CTRL:
+ 320 0000 27       		.byte	39
+ 321              		.global	I2C_SLV0_EN
+ 322              		.section	.rodata.I2C_SLV0_EN,"a"
+ 325              	I2C_SLV0_EN:
+ 326 0000 80       		.byte	-128
+ 327              		.global	I2C_READ_FLAG
+ 328              		.section	.rodata.I2C_READ_FLAG,"a"
+ 331              	I2C_READ_FLAG:
+ 332 0000 80       		.byte	-128
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 5
+
+
+ 333              		.global	MOT_DETECT_CTRL
+ 334              		.section	.rodata.MOT_DETECT_CTRL,"a"
+ 337              	MOT_DETECT_CTRL:
+ 338 0000 69       		.byte	105
+ 339              		.global	ACCEL_INTEL_EN
+ 340              		.section	.rodata.ACCEL_INTEL_EN,"a"
+ 343              	ACCEL_INTEL_EN:
+ 344 0000 80       		.byte	-128
+ 345              		.global	ACCEL_INTEL_MODE
+ 346              		.section	.rodata.ACCEL_INTEL_MODE,"a"
+ 349              	ACCEL_INTEL_MODE:
+ 350 0000 40       		.byte	64
+ 351              		.global	LP_ACCEL_ODR
+ 352              		.section	.rodata.LP_ACCEL_ODR,"a"
+ 355              	LP_ACCEL_ODR:
+ 356 0000 1E       		.byte	30
+ 357              		.global	WOM_THR
+ 358              		.section	.rodata.WOM_THR,"a"
+ 361              	WOM_THR:
+ 362 0000 1F       		.byte	31
+ 363              		.global	WHO_AM_I
+ 364              		.section	.rodata.WHO_AM_I,"a"
+ 367              	WHO_AM_I:
+ 368 0000 75       		.byte	117
+ 369              		.global	FIFO_EN
+ 370              		.section	.rodata.FIFO_EN,"a"
+ 373              	FIFO_EN:
+ 374 0000 23       		.byte	35
+ 375              		.global	FIFO_TEMP
+ 376              		.section	.rodata.FIFO_TEMP,"a"
+ 379              	FIFO_TEMP:
+ 380 0000 80       		.byte	-128
+ 381              		.global	FIFO_GYRO
+ 382              		.section	.rodata.FIFO_GYRO,"a"
+ 385              	FIFO_GYRO:
+ 386 0000 70       		.byte	112
+ 387              		.global	FIFO_ACCEL
+ 388              		.section	.rodata.FIFO_ACCEL,"a"
+ 391              	FIFO_ACCEL:
+ 392 0000 08       		.byte	8
+ 393              		.global	FIFO_MAG
+ 394              		.section	.rodata.FIFO_MAG,"a"
+ 397              	FIFO_MAG:
+ 398 0000 01       		.byte	1
+ 399              		.global	FIFO_COUNT
+ 400              		.section	.rodata.FIFO_COUNT,"a"
+ 403              	FIFO_COUNT:
+ 404 0000 72       		.byte	114
+ 405              		.global	FIFO_READ
+ 406              		.section	.rodata.FIFO_READ,"a"
+ 409              	FIFO_READ:
+ 410 0000 74       		.byte	116
+ 411              		.global	AK8963_I2C_ADDR
+ 412              		.section	.rodata.AK8963_I2C_ADDR,"a"
+ 415              	AK8963_I2C_ADDR:
+ 416 0000 0C       		.byte	12
+ 417              		.global	AK8963_HXL
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 6
+
+
+ 418              		.section	.rodata.AK8963_HXL,"a"
+ 421              	AK8963_HXL:
+ 422 0000 03       		.byte	3
+ 423              		.global	AK8963_CNTL1
+ 424              		.section	.rodata.AK8963_CNTL1,"a"
+ 427              	AK8963_CNTL1:
+ 428 0000 0A       		.byte	10
+ 429              		.global	AK8963_PWR_DOWN
+ 430              		.section	.rodata.AK8963_PWR_DOWN,"a"
+ 433              	AK8963_PWR_DOWN:
+ 434 0000 00       		.space	1
+ 435              		.global	AK8963_CNT_MEAS1
+ 436              		.section	.rodata.AK8963_CNT_MEAS1,"a"
+ 439              	AK8963_CNT_MEAS1:
+ 440 0000 12       		.byte	18
+ 441              		.global	AK8963_CNT_MEAS2
+ 442              		.section	.rodata.AK8963_CNT_MEAS2,"a"
+ 445              	AK8963_CNT_MEAS2:
+ 446 0000 16       		.byte	22
+ 447              		.global	AK8963_FUSE_ROM
+ 448              		.section	.rodata.AK8963_FUSE_ROM,"a"
+ 451              	AK8963_FUSE_ROM:
+ 452 0000 0F       		.byte	15
+ 453              		.global	AK8963_CNTL2
+ 454              		.section	.rodata.AK8963_CNTL2,"a"
+ 457              	AK8963_CNTL2:
+ 458 0000 0B       		.byte	11
+ 459              		.global	AK8963_RESET
+ 460              		.section	.rodata.AK8963_RESET,"a"
+ 463              	AK8963_RESET:
+ 464 0000 01       		.byte	1
+ 465              		.global	AK8963_ASA
+ 466              		.section	.rodata.AK8963_ASA,"a"
+ 469              	AK8963_ASA:
+ 470 0000 10       		.byte	16
+ 471              		.global	AK8963_WHO_AM_I
+ 472              		.section	.rodata.AK8963_WHO_AM_I,"a"
+ 475              	AK8963_WHO_AM_I:
+ 476 0000 00       		.space	1
+ 477              		.section	.bss._buffer,"aw",%nobits
+ 478              		.align	2
+ 481              	_buffer:
+ 482 0000 00000000 		.space	21
+ 482      00000000 
+ 482      00000000 
+ 482      00000000 
+ 482      00000000 
+ 483              		.section	.bss._mag_adjust,"aw",%nobits
+ 484              		.align	2
+ 487              	_mag_adjust:
+ 488 0000 000000   		.space	3
+ 489              		.section	.text.MPU9250_OnActivate,"ax",%progbits
+ 490              		.align	1
+ 491              		.weak	MPU9250_OnActivate
+ 492              		.syntax unified
+ 493              		.thumb
+ 494              		.thumb_func
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 7
+
+
+ 496              	MPU9250_OnActivate:
+ 497              	.LFB130:
+ 498              		.file 1 "Core/Src/MPU9250.c"
+   1:Core/Src/MPU9250.c **** /*
+   2:Core/Src/MPU9250.c ****  * MPU9250.c
+   3:Core/Src/MPU9250.c ****  *
+   4:Core/Src/MPU9250.c ****  *  Created on: Feb 28, 2019
+   5:Core/Src/MPU9250.c ****  *      Author: Desert
+   6:Core/Src/MPU9250.c ****  */
+   7:Core/Src/MPU9250.c **** 
+   8:Core/Src/MPU9250.c **** #include "MPU9250.h"
+   9:Core/Src/MPU9250.c **** #include "main.h"
+  10:Core/Src/MPU9250.c **** 
+  11:Core/Src/MPU9250.c **** // >>
+  12:Core/Src/MPU9250.c **** SPI_HandleTypeDef* HSPI;
+  13:Core/Src/MPU9250.c **** // <<
+  14:Core/Src/MPU9250.c **** 
+  15:Core/Src/MPU9250.c **** const uint8_t READWRITE_CMD = 0x80;
+  16:Core/Src/MPU9250.c **** const uint8_t MULTIPLEBYTE_CMD = 0x40;
+  17:Core/Src/MPU9250.c **** const uint8_t DUMMY_BYTE = 0x00;
+  18:Core/Src/MPU9250.c **** 
+  19:Core/Src/MPU9250.c **** const uint8_t _address = 0b11010000;
+  20:Core/Src/MPU9250.c **** // 400 kHz
+  21:Core/Src/MPU9250.c **** const uint32_t _i2cRate = 400000;
+  22:Core/Src/MPU9250.c **** 
+  23:Core/Src/MPU9250.c **** // MPU9250 registers
+  24:Core/Src/MPU9250.c **** const uint8_t ACCEL_OUT = 0x3B;
+  25:Core/Src/MPU9250.c **** const uint8_t GYRO_OUT = 0x43;
+  26:Core/Src/MPU9250.c **** const uint8_t TEMP_OUT = 0x41;
+  27:Core/Src/MPU9250.c **** const uint8_t EXT_SENS_DATA_00 = 0x49;
+  28:Core/Src/MPU9250.c **** const uint8_t ACCEL_CONFIG = 0x1C;
+  29:Core/Src/MPU9250.c **** const uint8_t ACCEL_FS_SEL_2G = 0x00;
+  30:Core/Src/MPU9250.c **** const uint8_t ACCEL_FS_SEL_4G = 0x08;
+  31:Core/Src/MPU9250.c **** const uint8_t ACCEL_FS_SEL_8G = 0x10;
+  32:Core/Src/MPU9250.c **** const uint8_t ACCEL_FS_SEL_16G = 0x18;
+  33:Core/Src/MPU9250.c **** const uint8_t GYRO_CONFIG = 0x1B;
+  34:Core/Src/MPU9250.c **** const uint8_t GYRO_FS_SEL_250DPS = 0x00;
+  35:Core/Src/MPU9250.c **** const uint8_t GYRO_FS_SEL_500DPS = 0x08;
+  36:Core/Src/MPU9250.c **** const uint8_t GYRO_FS_SEL_1000DPS = 0x10;
+  37:Core/Src/MPU9250.c **** const uint8_t GYRO_FS_SEL_2000DPS = 0x18;
+  38:Core/Src/MPU9250.c **** const uint8_t ACCEL_CONFIG2 = 0x1D;
+  39:Core/Src/MPU9250.c **** const uint8_t DLPF_184 = 0x01;
+  40:Core/Src/MPU9250.c **** const uint8_t DLPF_92 = 0x02;
+  41:Core/Src/MPU9250.c **** const uint8_t DLPF_41 = 0x03;
+  42:Core/Src/MPU9250.c **** const uint8_t DLPF_20 = 0x04;
+  43:Core/Src/MPU9250.c **** const uint8_t DLPF_10 = 0x05;
+  44:Core/Src/MPU9250.c **** const uint8_t DLPF_5 = 0x06;
+  45:Core/Src/MPU9250.c **** const uint8_t CONFIG = 0x1A;
+  46:Core/Src/MPU9250.c **** const uint8_t SMPDIV = 0x19;
+  47:Core/Src/MPU9250.c **** const uint8_t INT_PIN_CFG = 0x37;
+  48:Core/Src/MPU9250.c **** const uint8_t INT_ENABLE = 0x38;
+  49:Core/Src/MPU9250.c **** const uint8_t INT_DISABLE = 0x00;
+  50:Core/Src/MPU9250.c **** const uint8_t INT_PULSE_50US = 0x00;
+  51:Core/Src/MPU9250.c **** const uint8_t INT_WOM_EN = 0x40;
+  52:Core/Src/MPU9250.c **** const uint8_t INT_RAW_RDY_EN = 0x01;
+  53:Core/Src/MPU9250.c **** const uint8_t PWR_MGMNT_1 = 0x6B;
+  54:Core/Src/MPU9250.c **** const uint8_t PWR_CYCLE = 0x20;
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 8
+
+
+  55:Core/Src/MPU9250.c **** const uint8_t PWR_RESET = 0x80;
+  56:Core/Src/MPU9250.c **** const uint8_t CLOCK_SEL_PLL = 0x01;
+  57:Core/Src/MPU9250.c **** const uint8_t PWR_MGMNT_2 = 0x6C;
+  58:Core/Src/MPU9250.c **** const uint8_t SEN_ENABLE = 0x00;
+  59:Core/Src/MPU9250.c **** const uint8_t DIS_GYRO = 0x07;
+  60:Core/Src/MPU9250.c **** const uint8_t USER_CTRL = 0x6A;
+  61:Core/Src/MPU9250.c **** const uint8_t I2C_MST_EN = 0x20;
+  62:Core/Src/MPU9250.c **** const uint8_t I2C_MST_CLK = 0x0D;
+  63:Core/Src/MPU9250.c **** const uint8_t I2C_MST_CTRL = 0x24;
+  64:Core/Src/MPU9250.c **** const uint8_t I2C_SLV0_ADDR = 0x25;
+  65:Core/Src/MPU9250.c **** const uint8_t I2C_SLV0_REG = 0x26;
+  66:Core/Src/MPU9250.c **** const uint8_t I2C_SLV0_DO = 0x63;
+  67:Core/Src/MPU9250.c **** const uint8_t I2C_SLV0_CTRL = 0x27;
+  68:Core/Src/MPU9250.c **** const uint8_t I2C_SLV0_EN = 0x80;
+  69:Core/Src/MPU9250.c **** const uint8_t I2C_READ_FLAG = 0x80;
+  70:Core/Src/MPU9250.c **** const uint8_t MOT_DETECT_CTRL = 0x69;
+  71:Core/Src/MPU9250.c **** const uint8_t ACCEL_INTEL_EN = 0x80;
+  72:Core/Src/MPU9250.c **** const uint8_t ACCEL_INTEL_MODE = 0x40;
+  73:Core/Src/MPU9250.c **** const uint8_t LP_ACCEL_ODR = 0x1E;
+  74:Core/Src/MPU9250.c **** const uint8_t WOM_THR = 0x1F;
+  75:Core/Src/MPU9250.c **** const uint8_t WHO_AM_I = 0x75;
+  76:Core/Src/MPU9250.c **** const uint8_t FIFO_EN = 0x23;
+  77:Core/Src/MPU9250.c **** const uint8_t FIFO_TEMP = 0x80;
+  78:Core/Src/MPU9250.c **** const uint8_t FIFO_GYRO = 0x70;
+  79:Core/Src/MPU9250.c **** const uint8_t FIFO_ACCEL = 0x08;
+  80:Core/Src/MPU9250.c **** const uint8_t FIFO_MAG = 0x01;
+  81:Core/Src/MPU9250.c **** const uint8_t FIFO_COUNT = 0x72;
+  82:Core/Src/MPU9250.c **** const uint8_t FIFO_READ = 0x74;
+  83:Core/Src/MPU9250.c **** 
+  84:Core/Src/MPU9250.c **** // AK8963 registers
+  85:Core/Src/MPU9250.c **** const uint8_t AK8963_I2C_ADDR = 0x0C;
+  86:Core/Src/MPU9250.c **** const uint8_t AK8963_HXL = 0x03;
+  87:Core/Src/MPU9250.c **** const uint8_t AK8963_CNTL1 = 0x0A;
+  88:Core/Src/MPU9250.c **** const uint8_t AK8963_PWR_DOWN = 0x00;
+  89:Core/Src/MPU9250.c **** const uint8_t AK8963_CNT_MEAS1 = 0x12;
+  90:Core/Src/MPU9250.c **** const uint8_t AK8963_CNT_MEAS2 = 0x16;
+  91:Core/Src/MPU9250.c **** const uint8_t AK8963_FUSE_ROM = 0x0F;
+  92:Core/Src/MPU9250.c **** const uint8_t AK8963_CNTL2 = 0x0B;
+  93:Core/Src/MPU9250.c **** const uint8_t AK8963_RESET = 0x01;
+  94:Core/Src/MPU9250.c **** const uint8_t AK8963_ASA = 0x10;
+  95:Core/Src/MPU9250.c **** const uint8_t AK8963_WHO_AM_I = 0x00;
+  96:Core/Src/MPU9250.c **** 
+  97:Core/Src/MPU9250.c **** 
+  98:Core/Src/MPU9250.c **** static uint8_t _buffer[21];
+  99:Core/Src/MPU9250.c **** static uint8_t _mag_adjust[3];
+ 100:Core/Src/MPU9250.c **** 
+ 101:Core/Src/MPU9250.c **** __weak void MPU9250_OnActivate()
+ 102:Core/Src/MPU9250.c **** {
+ 499              		.loc 1 102 1
+ 500              		.cfi_startproc
+ 501              		@ args = 0, pretend = 0, frame = 0
+ 502              		@ frame_needed = 1, uses_anonymous_args = 0
+ 503              		@ link register save eliminated.
+ 504 0000 80B4     		push	{r7}
+ 505              	.LCFI0:
+ 506              		.cfi_def_cfa_offset 4
+ 507              		.cfi_offset 7, -4
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 9
+
+
+ 508 0002 00AF     		add	r7, sp, #0
+ 509              	.LCFI1:
+ 510              		.cfi_def_cfa_register 7
+ 103:Core/Src/MPU9250.c **** }
+ 511              		.loc 1 103 1
+ 512 0004 00BF     		nop
+ 513 0006 BD46     		mov	sp, r7
+ 514              	.LCFI2:
+ 515              		.cfi_def_cfa_register 13
+ 516              		@ sp needed
+ 517 0008 5DF8047B 		ldr	r7, [sp], #4
+ 518              	.LCFI3:
+ 519              		.cfi_restore 7
+ 520              		.cfi_def_cfa_offset 0
+ 521 000c 7047     		bx	lr
+ 522              		.cfi_endproc
+ 523              	.LFE130:
+ 525              		.section	.text.MPU9250_Activate,"ax",%progbits
+ 526              		.align	1
+ 527              		.syntax unified
+ 528              		.thumb
+ 529              		.thumb_func
+ 531              	MPU9250_Activate:
+ 532              	.LFB131:
+ 104:Core/Src/MPU9250.c **** 
+ 105:Core/Src/MPU9250.c **** static inline void MPU9250_Activate()
+ 106:Core/Src/MPU9250.c **** {
+ 533              		.loc 1 106 1
+ 534              		.cfi_startproc
+ 535              		@ args = 0, pretend = 0, frame = 0
+ 536              		@ frame_needed = 1, uses_anonymous_args = 0
+ 537 0000 80B5     		push	{r7, lr}
+ 538              	.LCFI4:
+ 539              		.cfi_def_cfa_offset 8
+ 540              		.cfi_offset 7, -8
+ 541              		.cfi_offset 14, -4
+ 542 0002 00AF     		add	r7, sp, #0
+ 543              	.LCFI5:
+ 544              		.cfi_def_cfa_register 7
+ 107:Core/Src/MPU9250.c **** 	MPU9250_OnActivate();
+ 545              		.loc 1 107 2
+ 546 0004 FFF7FEFF 		bl	MPU9250_OnActivate
+ 108:Core/Src/MPU9250.c **** 	HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_RESET);
+ 547              		.loc 1 108 2
+ 548 0008 0022     		movs	r2, #0
+ 549 000a 1021     		movs	r1, #16
+ 550 000c 0248     		ldr	r0, .L3
+ 551 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 109:Core/Src/MPU9250.c **** }
+ 552              		.loc 1 109 1
+ 553 0012 00BF     		nop
+ 554 0014 80BD     		pop	{r7, pc}
+ 555              	.L4:
+ 556 0016 00BF     		.align	2
+ 557              	.L3:
+ 558 0018 00000240 		.word	1073872896
+ 559              		.cfi_endproc
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 10
+
+
+ 560              	.LFE131:
+ 562              		.section	.text.MPU9250_Deactivate,"ax",%progbits
+ 563              		.align	1
+ 564              		.syntax unified
+ 565              		.thumb
+ 566              		.thumb_func
+ 568              	MPU9250_Deactivate:
+ 569              	.LFB132:
+ 110:Core/Src/MPU9250.c **** 
+ 111:Core/Src/MPU9250.c **** static inline void MPU9250_Deactivate()
+ 112:Core/Src/MPU9250.c **** {
+ 570              		.loc 1 112 1
+ 571              		.cfi_startproc
+ 572              		@ args = 0, pretend = 0, frame = 0
+ 573              		@ frame_needed = 1, uses_anonymous_args = 0
+ 574 0000 80B5     		push	{r7, lr}
+ 575              	.LCFI6:
+ 576              		.cfi_def_cfa_offset 8
+ 577              		.cfi_offset 7, -8
+ 578              		.cfi_offset 14, -4
+ 579 0002 00AF     		add	r7, sp, #0
+ 580              	.LCFI7:
+ 581              		.cfi_def_cfa_register 7
+ 113:Core/Src/MPU9250.c **** 	HAL_GPIO_WritePin(MPU9250_CS_GPIO, MPU9250_CS_PIN, GPIO_PIN_SET);
+ 582              		.loc 1 113 2
+ 583 0004 0122     		movs	r2, #1
+ 584 0006 1021     		movs	r1, #16
+ 585 0008 0248     		ldr	r0, .L6
+ 586 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 114:Core/Src/MPU9250.c **** }
+ 587              		.loc 1 114 1
+ 588 000e 00BF     		nop
+ 589 0010 80BD     		pop	{r7, pc}
+ 590              	.L7:
+ 591 0012 00BF     		.align	2
+ 592              	.L6:
+ 593 0014 00000240 		.word	1073872896
+ 594              		.cfi_endproc
+ 595              	.LFE132:
+ 597              		.section	.text.SPIx_WriteRead,"ax",%progbits
+ 598              		.align	1
+ 599              		.global	SPIx_WriteRead
+ 600              		.syntax unified
+ 601              		.thumb
+ 602              		.thumb_func
+ 604              	SPIx_WriteRead:
+ 605              	.LFB133:
+ 115:Core/Src/MPU9250.c **** 
+ 116:Core/Src/MPU9250.c **** uint8_t SPIx_WriteRead(uint8_t Byte)
+ 117:Core/Src/MPU9250.c **** {
+ 606              		.loc 1 117 1
+ 607              		.cfi_startproc
+ 608              		@ args = 0, pretend = 0, frame = 16
+ 609              		@ frame_needed = 1, uses_anonymous_args = 0
+ 610 0000 80B5     		push	{r7, lr}
+ 611              	.LCFI8:
+ 612              		.cfi_def_cfa_offset 8
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 11
+
+
+ 613              		.cfi_offset 7, -8
+ 614              		.cfi_offset 14, -4
+ 615 0002 86B0     		sub	sp, sp, #24
+ 616              	.LCFI9:
+ 617              		.cfi_def_cfa_offset 32
+ 618 0004 02AF     		add	r7, sp, #8
+ 619              	.LCFI10:
+ 620              		.cfi_def_cfa 7, 24
+ 621 0006 0346     		mov	r3, r0
+ 622 0008 FB71     		strb	r3, [r7, #7]
+ 118:Core/Src/MPU9250.c **** 	uint8_t receivedbyte = 0;
+ 623              		.loc 1 118 10
+ 624 000a 0023     		movs	r3, #0
+ 625 000c FB73     		strb	r3, [r7, #15]
+ 119:Core/Src/MPU9250.c **** 	if(HAL_SPI_TransmitReceive(HSPI,(uint8_t*) &Byte,(uint8_t*) &receivedbyte,1,0x1000)!=HAL_OK)
+ 626              		.loc 1 119 5
+ 627 000e 0A4B     		ldr	r3, .L12
+ 628 0010 1868     		ldr	r0, [r3]
+ 629 0012 07F10F02 		add	r2, r7, #15
+ 630 0016 F91D     		adds	r1, r7, #7
+ 631 0018 4FF48053 		mov	r3, #4096
+ 632 001c 0093     		str	r3, [sp]
+ 633 001e 0123     		movs	r3, #1
+ 634 0020 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
+ 635 0024 0346     		mov	r3, r0
+ 636              		.loc 1 119 4
+ 637 0026 002B     		cmp	r3, #0
+ 638 0028 01D0     		beq	.L9
+ 120:Core/Src/MPU9250.c **** 	{
+ 121:Core/Src/MPU9250.c **** 		return -1;
+ 639              		.loc 1 121 10
+ 640 002a FF23     		movs	r3, #255
+ 641 002c 00E0     		b	.L11
+ 642              	.L9:
+ 122:Core/Src/MPU9250.c **** 	}
+ 123:Core/Src/MPU9250.c **** 	else
+ 124:Core/Src/MPU9250.c **** 	{
+ 125:Core/Src/MPU9250.c **** 	}
+ 126:Core/Src/MPU9250.c **** 	return receivedbyte;
+ 643              		.loc 1 126 9
+ 644 002e FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 645              	.L11:
+ 127:Core/Src/MPU9250.c **** }
+ 646              		.loc 1 127 1 discriminator 1
+ 647 0030 1846     		mov	r0, r3
+ 648 0032 1037     		adds	r7, r7, #16
+ 649              	.LCFI11:
+ 650              		.cfi_def_cfa_offset 8
+ 651 0034 BD46     		mov	sp, r7
+ 652              	.LCFI12:
+ 653              		.cfi_def_cfa_register 13
+ 654              		@ sp needed
+ 655 0036 80BD     		pop	{r7, pc}
+ 656              	.L13:
+ 657              		.align	2
+ 658              	.L12:
+ 659 0038 00000000 		.word	HSPI
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 12
+
+
+ 660              		.cfi_endproc
+ 661              	.LFE133:
+ 663              		.section	.text.MPU_SPI_Write,"ax",%progbits
+ 664              		.align	1
+ 665              		.global	MPU_SPI_Write
+ 666              		.syntax unified
+ 667              		.thumb
+ 668              		.thumb_func
+ 670              	MPU_SPI_Write:
+ 671              	.LFB134:
+ 128:Core/Src/MPU9250.c **** 
+ 129:Core/Src/MPU9250.c **** void MPU_SPI_Write (uint8_t *pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite)
+ 130:Core/Src/MPU9250.c **** {
+ 672              		.loc 1 130 1
+ 673              		.cfi_startproc
+ 674              		@ args = 0, pretend = 0, frame = 8
+ 675              		@ frame_needed = 1, uses_anonymous_args = 0
+ 676 0000 80B5     		push	{r7, lr}
+ 677              	.LCFI13:
+ 678              		.cfi_def_cfa_offset 8
+ 679              		.cfi_offset 7, -8
+ 680              		.cfi_offset 14, -4
+ 681 0002 82B0     		sub	sp, sp, #8
+ 682              	.LCFI14:
+ 683              		.cfi_def_cfa_offset 16
+ 684 0004 00AF     		add	r7, sp, #0
+ 685              	.LCFI15:
+ 686              		.cfi_def_cfa_register 7
+ 687 0006 7860     		str	r0, [r7, #4]
+ 688 0008 0B46     		mov	r3, r1
+ 689 000a FB70     		strb	r3, [r7, #3]
+ 690 000c 1346     		mov	r3, r2	@ movhi
+ 691 000e 3B80     		strh	r3, [r7]	@ movhi
+ 131:Core/Src/MPU9250.c **** 	MPU9250_Activate();
+ 692              		.loc 1 131 2
+ 693 0010 FFF7FEFF 		bl	MPU9250_Activate
+ 132:Core/Src/MPU9250.c **** 	SPIx_WriteRead(WriteAddr);
+ 694              		.loc 1 132 2
+ 695 0014 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 696 0016 1846     		mov	r0, r3
+ 697 0018 FFF7FEFF 		bl	SPIx_WriteRead
+ 133:Core/Src/MPU9250.c **** 	while(NumByteToWrite>=0x01)
+ 698              		.loc 1 133 7
+ 699 001c 0AE0     		b	.L15
+ 700              	.L16:
+ 134:Core/Src/MPU9250.c **** 	{
+ 135:Core/Src/MPU9250.c **** 		SPIx_WriteRead(*pBuffer);
+ 701              		.loc 1 135 3
+ 702 001e 7B68     		ldr	r3, [r7, #4]
+ 703 0020 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 704 0022 1846     		mov	r0, r3
+ 705 0024 FFF7FEFF 		bl	SPIx_WriteRead
+ 136:Core/Src/MPU9250.c **** 		NumByteToWrite--;
+ 706              		.loc 1 136 17
+ 707 0028 3B88     		ldrh	r3, [r7]
+ 708 002a 013B     		subs	r3, r3, #1
+ 709 002c 3B80     		strh	r3, [r7]	@ movhi
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 13
+
+
+ 137:Core/Src/MPU9250.c **** 		pBuffer++;
+ 710              		.loc 1 137 10
+ 711 002e 7B68     		ldr	r3, [r7, #4]
+ 712 0030 0133     		adds	r3, r3, #1
+ 713 0032 7B60     		str	r3, [r7, #4]
+ 714              	.L15:
+ 133:Core/Src/MPU9250.c **** 	{
+ 715              		.loc 1 133 7
+ 716 0034 3B88     		ldrh	r3, [r7]
+ 717 0036 002B     		cmp	r3, #0
+ 718 0038 F1D1     		bne	.L16
+ 138:Core/Src/MPU9250.c **** 	}
+ 139:Core/Src/MPU9250.c **** 	MPU9250_Deactivate();
+ 719              		.loc 1 139 2
+ 720 003a FFF7FEFF 		bl	MPU9250_Deactivate
+ 140:Core/Src/MPU9250.c **** }
+ 721              		.loc 1 140 1
+ 722 003e 00BF     		nop
+ 723 0040 0837     		adds	r7, r7, #8
+ 724              	.LCFI16:
+ 725              		.cfi_def_cfa_offset 8
+ 726 0042 BD46     		mov	sp, r7
+ 727              	.LCFI17:
+ 728              		.cfi_def_cfa_register 13
+ 729              		@ sp needed
+ 730 0044 80BD     		pop	{r7, pc}
+ 731              		.cfi_endproc
+ 732              	.LFE134:
+ 734              		.section	.text.MPU_SPI_Read,"ax",%progbits
+ 735              		.align	1
+ 736              		.global	MPU_SPI_Read
+ 737              		.syntax unified
+ 738              		.thumb
+ 739              		.thumb_func
+ 741              	MPU_SPI_Read:
+ 742              	.LFB135:
+ 141:Core/Src/MPU9250.c **** 
+ 142:Core/Src/MPU9250.c **** void MPU_SPI_Read(uint8_t *pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
+ 143:Core/Src/MPU9250.c **** {
+ 743              		.loc 1 143 1
+ 744              		.cfi_startproc
+ 745              		@ args = 0, pretend = 0, frame = 16
+ 746              		@ frame_needed = 1, uses_anonymous_args = 0
+ 747 0000 80B5     		push	{r7, lr}
+ 748              	.LCFI18:
+ 749              		.cfi_def_cfa_offset 8
+ 750              		.cfi_offset 7, -8
+ 751              		.cfi_offset 14, -4
+ 752 0002 84B0     		sub	sp, sp, #16
+ 753              	.LCFI19:
+ 754              		.cfi_def_cfa_offset 24
+ 755 0004 00AF     		add	r7, sp, #0
+ 756              	.LCFI20:
+ 757              		.cfi_def_cfa_register 7
+ 758 0006 7860     		str	r0, [r7, #4]
+ 759 0008 0B46     		mov	r3, r1
+ 760 000a FB70     		strb	r3, [r7, #3]
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 14
+
+
+ 761 000c 1346     		mov	r3, r2	@ movhi
+ 762 000e 3B80     		strh	r3, [r7]	@ movhi
+ 144:Core/Src/MPU9250.c **** 	MPU9250_Activate();
+ 763              		.loc 1 144 2
+ 764 0010 FFF7FEFF 		bl	MPU9250_Activate
+ 145:Core/Src/MPU9250.c **** 	uint8_t data = ReadAddr | READWRITE_CMD;
+ 765              		.loc 1 145 10
+ 766 0014 8022     		movs	r2, #128
+ 767 0016 FB78     		ldrb	r3, [r7, #3]
+ 768 0018 1343     		orrs	r3, r3, r2
+ 769 001a DBB2     		uxtb	r3, r3
+ 770 001c FB73     		strb	r3, [r7, #15]
+ 146:Core/Src/MPU9250.c **** 	HAL_SPI_Transmit(HSPI, &data, 1, HAL_MAX_DELAY);
+ 771              		.loc 1 146 2
+ 772 001e 0B4B     		ldr	r3, .L18
+ 773 0020 1868     		ldr	r0, [r3]
+ 774 0022 07F10F01 		add	r1, r7, #15
+ 775 0026 4FF0FF33 		mov	r3, #-1
+ 776 002a 0122     		movs	r2, #1
+ 777 002c FFF7FEFF 		bl	HAL_SPI_Transmit
+ 147:Core/Src/MPU9250.c **** 	HAL_SPI_Receive(HSPI, pBuffer, NumByteToRead, HAL_MAX_DELAY);
+ 778              		.loc 1 147 2
+ 779 0030 064B     		ldr	r3, .L18
+ 780 0032 1868     		ldr	r0, [r3]
+ 781 0034 3A88     		ldrh	r2, [r7]
+ 782 0036 4FF0FF33 		mov	r3, #-1
+ 783 003a 7968     		ldr	r1, [r7, #4]
+ 784 003c FFF7FEFF 		bl	HAL_SPI_Receive
+ 148:Core/Src/MPU9250.c **** 	MPU9250_Deactivate();
+ 785              		.loc 1 148 2
+ 786 0040 FFF7FEFF 		bl	MPU9250_Deactivate
+ 149:Core/Src/MPU9250.c **** }
+ 787              		.loc 1 149 1
+ 788 0044 00BF     		nop
+ 789 0046 1037     		adds	r7, r7, #16
+ 790              	.LCFI21:
+ 791              		.cfi_def_cfa_offset 8
+ 792 0048 BD46     		mov	sp, r7
+ 793              	.LCFI22:
+ 794              		.cfi_def_cfa_register 13
+ 795              		@ sp needed
+ 796 004a 80BD     		pop	{r7, pc}
+ 797              	.L19:
+ 798              		.align	2
+ 799              	.L18:
+ 800 004c 00000000 		.word	HSPI
+ 801              		.cfi_endproc
+ 802              	.LFE135:
+ 804              		.section	.text.writeRegister,"ax",%progbits
+ 805              		.align	1
+ 806              		.global	writeRegister
+ 807              		.syntax unified
+ 808              		.thumb
+ 809              		.thumb_func
+ 811              	writeRegister:
+ 812              	.LFB136:
+ 150:Core/Src/MPU9250.c **** 
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 15
+
+
+ 151:Core/Src/MPU9250.c **** /* writes a byte to MPU9250 register given a register address and data */
+ 152:Core/Src/MPU9250.c **** void writeRegister(uint8_t subAddress, uint8_t data)
+ 153:Core/Src/MPU9250.c **** {
+ 813              		.loc 1 153 1
+ 814              		.cfi_startproc
+ 815              		@ args = 0, pretend = 0, frame = 8
+ 816              		@ frame_needed = 1, uses_anonymous_args = 0
+ 817 0000 80B5     		push	{r7, lr}
+ 818              	.LCFI23:
+ 819              		.cfi_def_cfa_offset 8
+ 820              		.cfi_offset 7, -8
+ 821              		.cfi_offset 14, -4
+ 822 0002 82B0     		sub	sp, sp, #8
+ 823              	.LCFI24:
+ 824              		.cfi_def_cfa_offset 16
+ 825 0004 00AF     		add	r7, sp, #0
+ 826              	.LCFI25:
+ 827              		.cfi_def_cfa_register 7
+ 828 0006 0346     		mov	r3, r0
+ 829 0008 0A46     		mov	r2, r1
+ 830 000a FB71     		strb	r3, [r7, #7]
+ 831 000c 1346     		mov	r3, r2
+ 832 000e BB71     		strb	r3, [r7, #6]
+ 154:Core/Src/MPU9250.c **** 	MPU_SPI_Write(&data, subAddress, 1);
+ 833              		.loc 1 154 2
+ 834 0010 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 835 0012 BB1D     		adds	r3, r7, #6
+ 836 0014 0122     		movs	r2, #1
+ 837 0016 1846     		mov	r0, r3
+ 838 0018 FFF7FEFF 		bl	MPU_SPI_Write
+ 155:Core/Src/MPU9250.c **** 	HAL_Delay(10);
+ 839              		.loc 1 155 2
+ 840 001c 0A20     		movs	r0, #10
+ 841 001e FFF7FEFF 		bl	HAL_Delay
+ 156:Core/Src/MPU9250.c **** }
+ 842              		.loc 1 156 1
+ 843 0022 00BF     		nop
+ 844 0024 0837     		adds	r7, r7, #8
+ 845              	.LCFI26:
+ 846              		.cfi_def_cfa_offset 8
+ 847 0026 BD46     		mov	sp, r7
+ 848              	.LCFI27:
+ 849              		.cfi_def_cfa_register 13
+ 850              		@ sp needed
+ 851 0028 80BD     		pop	{r7, pc}
+ 852              		.cfi_endproc
+ 853              	.LFE136:
+ 855              		.section	.text.readRegisters,"ax",%progbits
+ 856              		.align	1
+ 857              		.global	readRegisters
+ 858              		.syntax unified
+ 859              		.thumb
+ 860              		.thumb_func
+ 862              	readRegisters:
+ 863              	.LFB137:
+ 157:Core/Src/MPU9250.c **** 
+ 158:Core/Src/MPU9250.c **** /* reads registers from MPU9250 given a starting register address, number of bytes, and a pointer t
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 16
+
+
+ 159:Core/Src/MPU9250.c **** void readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest){
+ 864              		.loc 1 159 69
+ 865              		.cfi_startproc
+ 866              		@ args = 0, pretend = 0, frame = 8
+ 867              		@ frame_needed = 1, uses_anonymous_args = 0
+ 868 0000 80B5     		push	{r7, lr}
+ 869              	.LCFI28:
+ 870              		.cfi_def_cfa_offset 8
+ 871              		.cfi_offset 7, -8
+ 872              		.cfi_offset 14, -4
+ 873 0002 82B0     		sub	sp, sp, #8
+ 874              	.LCFI29:
+ 875              		.cfi_def_cfa_offset 16
+ 876 0004 00AF     		add	r7, sp, #0
+ 877              	.LCFI30:
+ 878              		.cfi_def_cfa_register 7
+ 879 0006 0346     		mov	r3, r0
+ 880 0008 3A60     		str	r2, [r7]
+ 881 000a FB71     		strb	r3, [r7, #7]
+ 882 000c 0B46     		mov	r3, r1
+ 883 000e BB71     		strb	r3, [r7, #6]
+ 160:Core/Src/MPU9250.c **** 	MPU_SPI_Read(dest, subAddress, count);
+ 884              		.loc 1 160 2
+ 885 0010 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 886 0012 9AB2     		uxth	r2, r3
+ 887 0014 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 888 0016 1946     		mov	r1, r3
+ 889 0018 3868     		ldr	r0, [r7]
+ 890 001a FFF7FEFF 		bl	MPU_SPI_Read
+ 161:Core/Src/MPU9250.c **** }
+ 891              		.loc 1 161 1
+ 892 001e 00BF     		nop
+ 893 0020 0837     		adds	r7, r7, #8
+ 894              	.LCFI31:
+ 895              		.cfi_def_cfa_offset 8
+ 896 0022 BD46     		mov	sp, r7
+ 897              	.LCFI32:
+ 898              		.cfi_def_cfa_register 13
+ 899              		@ sp needed
+ 900 0024 80BD     		pop	{r7, pc}
+ 901              		.cfi_endproc
+ 902              	.LFE137:
+ 904              		.section	.text.writeAK8963Register,"ax",%progbits
+ 905              		.align	1
+ 906              		.global	writeAK8963Register
+ 907              		.syntax unified
+ 908              		.thumb
+ 909              		.thumb_func
+ 911              	writeAK8963Register:
+ 912              	.LFB138:
+ 162:Core/Src/MPU9250.c **** 
+ 163:Core/Src/MPU9250.c **** /* writes a register to the AK8963 given a register address and data */
+ 164:Core/Src/MPU9250.c **** void writeAK8963Register(uint8_t subAddress, uint8_t data)
+ 165:Core/Src/MPU9250.c **** {
+ 913              		.loc 1 165 1
+ 914              		.cfi_startproc
+ 915              		@ args = 0, pretend = 0, frame = 8
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 17
+
+
+ 916              		@ frame_needed = 1, uses_anonymous_args = 0
+ 917 0000 80B5     		push	{r7, lr}
+ 918              	.LCFI33:
+ 919              		.cfi_def_cfa_offset 8
+ 920              		.cfi_offset 7, -8
+ 921              		.cfi_offset 14, -4
+ 922 0002 82B0     		sub	sp, sp, #8
+ 923              	.LCFI34:
+ 924              		.cfi_def_cfa_offset 16
+ 925 0004 00AF     		add	r7, sp, #0
+ 926              	.LCFI35:
+ 927              		.cfi_def_cfa_register 7
+ 928 0006 0346     		mov	r3, r0
+ 929 0008 0A46     		mov	r2, r1
+ 930 000a FB71     		strb	r3, [r7, #7]
+ 931 000c 1346     		mov	r3, r2
+ 932 000e BB71     		strb	r3, [r7, #6]
+ 166:Core/Src/MPU9250.c **** 	// set slave 0 to the AK8963 and set for write
+ 167:Core/Src/MPU9250.c **** 	writeRegister(I2C_SLV0_ADDR,AK8963_I2C_ADDR);
+ 933              		.loc 1 167 2
+ 934 0010 2523     		movs	r3, #37
+ 935 0012 0C22     		movs	r2, #12
+ 936 0014 1146     		mov	r1, r2
+ 937 0016 1846     		mov	r0, r3
+ 938 0018 FFF7FEFF 		bl	writeRegister
+ 168:Core/Src/MPU9250.c **** 
+ 169:Core/Src/MPU9250.c **** 	// set the register to the desired AK8963 sub address
+ 170:Core/Src/MPU9250.c **** 	writeRegister(I2C_SLV0_REG,subAddress);
+ 939              		.loc 1 170 2
+ 940 001c 2622     		movs	r2, #38
+ 941 001e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 942 0020 1946     		mov	r1, r3
+ 943 0022 1046     		mov	r0, r2
+ 944 0024 FFF7FEFF 		bl	writeRegister
+ 171:Core/Src/MPU9250.c **** 
+ 172:Core/Src/MPU9250.c **** 	// store the data for write
+ 173:Core/Src/MPU9250.c **** 	writeRegister(I2C_SLV0_DO,data);
+ 945              		.loc 1 173 2
+ 946 0028 6322     		movs	r2, #99
+ 947 002a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 948 002c 1946     		mov	r1, r3
+ 949 002e 1046     		mov	r0, r2
+ 950 0030 FFF7FEFF 		bl	writeRegister
+ 174:Core/Src/MPU9250.c **** 
+ 175:Core/Src/MPU9250.c **** 	// enable I2C and send 1 byte
+ 176:Core/Src/MPU9250.c **** 	writeRegister(I2C_SLV0_CTRL,I2C_SLV0_EN | (uint8_t)1);
+ 951              		.loc 1 176 2
+ 952 0034 2722     		movs	r2, #39
+ 953 0036 8023     		movs	r3, #128
+ 954 0038 43F00103 		orr	r3, r3, #1
+ 955 003c DBB2     		uxtb	r3, r3
+ 956 003e 1946     		mov	r1, r3
+ 957 0040 1046     		mov	r0, r2
+ 958 0042 FFF7FEFF 		bl	writeRegister
+ 177:Core/Src/MPU9250.c **** }
+ 959              		.loc 1 177 1
+ 960 0046 00BF     		nop
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 18
+
+
+ 961 0048 0837     		adds	r7, r7, #8
+ 962              	.LCFI36:
+ 963              		.cfi_def_cfa_offset 8
+ 964 004a BD46     		mov	sp, r7
+ 965              	.LCFI37:
+ 966              		.cfi_def_cfa_register 13
+ 967              		@ sp needed
+ 968 004c 80BD     		pop	{r7, pc}
+ 969              		.cfi_endproc
+ 970              	.LFE138:
+ 972              		.section	.text.readAK8963Registers,"ax",%progbits
+ 973              		.align	1
+ 974              		.global	readAK8963Registers
+ 975              		.syntax unified
+ 976              		.thumb
+ 977              		.thumb_func
+ 979              	readAK8963Registers:
+ 980              	.LFB139:
+ 178:Core/Src/MPU9250.c **** 
+ 179:Core/Src/MPU9250.c **** /* reads registers from the AK8963 */
+ 180:Core/Src/MPU9250.c **** void readAK8963Registers(uint8_t subAddress, uint8_t count, uint8_t* dest)
+ 181:Core/Src/MPU9250.c **** {
+ 981              		.loc 1 181 1
+ 982              		.cfi_startproc
+ 983              		@ args = 0, pretend = 0, frame = 8
+ 984              		@ frame_needed = 1, uses_anonymous_args = 0
+ 985 0000 80B5     		push	{r7, lr}
+ 986              	.LCFI38:
+ 987              		.cfi_def_cfa_offset 8
+ 988              		.cfi_offset 7, -8
+ 989              		.cfi_offset 14, -4
+ 990 0002 82B0     		sub	sp, sp, #8
+ 991              	.LCFI39:
+ 992              		.cfi_def_cfa_offset 16
+ 993 0004 00AF     		add	r7, sp, #0
+ 994              	.LCFI40:
+ 995              		.cfi_def_cfa_register 7
+ 996 0006 0346     		mov	r3, r0
+ 997 0008 3A60     		str	r2, [r7]
+ 998 000a FB71     		strb	r3, [r7, #7]
+ 999 000c 0B46     		mov	r3, r1
+ 1000 000e BB71     		strb	r3, [r7, #6]
+ 182:Core/Src/MPU9250.c **** 	// set slave 0 to the AK8963 and set for read
+ 183:Core/Src/MPU9250.c **** 	writeRegister(I2C_SLV0_ADDR, AK8963_I2C_ADDR | I2C_READ_FLAG);
+ 1001              		.loc 1 183 2
+ 1002 0010 2520     		movs	r0, #37
+ 1003 0012 0C22     		movs	r2, #12
+ 1004 0014 8023     		movs	r3, #128
+ 1005 0016 1343     		orrs	r3, r3, r2
+ 1006 0018 DBB2     		uxtb	r3, r3
+ 1007 001a 1946     		mov	r1, r3
+ 1008 001c FFF7FEFF 		bl	writeRegister
+ 184:Core/Src/MPU9250.c **** 
+ 185:Core/Src/MPU9250.c **** 	// set the register to the desired AK8963 sub address
+ 186:Core/Src/MPU9250.c **** 	writeRegister(I2C_SLV0_REG,subAddress);
+ 1009              		.loc 1 186 2
+ 1010 0020 2622     		movs	r2, #38
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 19
+
+
+ 1011 0022 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1012 0024 1946     		mov	r1, r3
+ 1013 0026 1046     		mov	r0, r2
+ 1014 0028 FFF7FEFF 		bl	writeRegister
+ 187:Core/Src/MPU9250.c **** 
+ 188:Core/Src/MPU9250.c **** 	// enable I2C and request the bytes
+ 189:Core/Src/MPU9250.c **** 	writeRegister(I2C_SLV0_CTRL,I2C_SLV0_EN | count);
+ 1015              		.loc 1 189 2
+ 1016 002c 2720     		movs	r0, #39
+ 1017 002e 8022     		movs	r2, #128
+ 1018 0030 BB79     		ldrb	r3, [r7, #6]
+ 1019 0032 1343     		orrs	r3, r3, r2
+ 1020 0034 DBB2     		uxtb	r3, r3
+ 1021 0036 1946     		mov	r1, r3
+ 1022 0038 FFF7FEFF 		bl	writeRegister
+ 190:Core/Src/MPU9250.c **** 
+ 191:Core/Src/MPU9250.c **** 	// takes some time for these registers to fill
+ 192:Core/Src/MPU9250.c **** 	HAL_Delay(1);
+ 1023              		.loc 1 192 2
+ 1024 003c 0120     		movs	r0, #1
+ 1025 003e FFF7FEFF 		bl	HAL_Delay
+ 193:Core/Src/MPU9250.c **** 
+ 194:Core/Src/MPU9250.c **** 	// read the bytes off the MPU9250 EXT_SENS_DATA registers
+ 195:Core/Src/MPU9250.c **** 	readRegisters(EXT_SENS_DATA_00,count,dest);
+ 1026              		.loc 1 195 2
+ 1027 0042 4920     		movs	r0, #73
+ 1028 0044 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 1029 0046 3A68     		ldr	r2, [r7]
+ 1030 0048 1946     		mov	r1, r3
+ 1031 004a FFF7FEFF 		bl	readRegisters
+ 196:Core/Src/MPU9250.c **** }
+ 1032              		.loc 1 196 1
+ 1033 004e 00BF     		nop
+ 1034 0050 0837     		adds	r7, r7, #8
+ 1035              	.LCFI41:
+ 1036              		.cfi_def_cfa_offset 8
+ 1037 0052 BD46     		mov	sp, r7
+ 1038              	.LCFI42:
+ 1039              		.cfi_def_cfa_register 13
+ 1040              		@ sp needed
+ 1041 0054 80BD     		pop	{r7, pc}
+ 1042              		.cfi_endproc
+ 1043              	.LFE139:
+ 1045              		.section	.text.whoAmI,"ax",%progbits
+ 1046              		.align	1
+ 1047              		.syntax unified
+ 1048              		.thumb
+ 1049              		.thumb_func
+ 1051              	whoAmI:
+ 1052              	.LFB140:
+ 197:Core/Src/MPU9250.c **** 
+ 198:Core/Src/MPU9250.c **** /* gets the MPU9250 WHO_AM_I register value, expected to be 0x71 */
+ 199:Core/Src/MPU9250.c **** static uint8_t whoAmI(){
+ 1053              		.loc 1 199 24
+ 1054              		.cfi_startproc
+ 1055              		@ args = 0, pretend = 0, frame = 0
+ 1056              		@ frame_needed = 1, uses_anonymous_args = 0
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 20
+
+
+ 1057 0000 80B5     		push	{r7, lr}
+ 1058              	.LCFI43:
+ 1059              		.cfi_def_cfa_offset 8
+ 1060              		.cfi_offset 7, -8
+ 1061              		.cfi_offset 14, -4
+ 1062 0002 00AF     		add	r7, sp, #0
+ 1063              	.LCFI44:
+ 1064              		.cfi_def_cfa_register 7
+ 200:Core/Src/MPU9250.c **** 	// read the WHO AM I register
+ 201:Core/Src/MPU9250.c **** 	readRegisters(WHO_AM_I,1,_buffer);
+ 1065              		.loc 1 201 2
+ 1066 0004 7523     		movs	r3, #117
+ 1067 0006 044A     		ldr	r2, .L26
+ 1068 0008 0121     		movs	r1, #1
+ 1069 000a 1846     		mov	r0, r3
+ 1070 000c FFF7FEFF 		bl	readRegisters
+ 202:Core/Src/MPU9250.c **** 
+ 203:Core/Src/MPU9250.c **** 	// return the register value
+ 204:Core/Src/MPU9250.c **** 	return _buffer[0];
+ 1071              		.loc 1 204 16
+ 1072 0010 014B     		ldr	r3, .L26
+ 1073 0012 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 205:Core/Src/MPU9250.c **** }
+ 1074              		.loc 1 205 1
+ 1075 0014 1846     		mov	r0, r3
+ 1076 0016 80BD     		pop	{r7, pc}
+ 1077              	.L27:
+ 1078              		.align	2
+ 1079              	.L26:
+ 1080 0018 00000000 		.word	_buffer
+ 1081              		.cfi_endproc
+ 1082              	.LFE140:
+ 1084              		.section	.text.whoAmIAK8963,"ax",%progbits
+ 1085              		.align	1
+ 1086              		.syntax unified
+ 1087              		.thumb
+ 1088              		.thumb_func
+ 1090              	whoAmIAK8963:
+ 1091              	.LFB141:
+ 206:Core/Src/MPU9250.c **** 
+ 207:Core/Src/MPU9250.c **** /* gets the AK8963 WHO_AM_I register value, expected to be 0x48 */
+ 208:Core/Src/MPU9250.c **** static int whoAmIAK8963(){
+ 1092              		.loc 1 208 26
+ 1093              		.cfi_startproc
+ 1094              		@ args = 0, pretend = 0, frame = 0
+ 1095              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1096 0000 80B5     		push	{r7, lr}
+ 1097              	.LCFI45:
+ 1098              		.cfi_def_cfa_offset 8
+ 1099              		.cfi_offset 7, -8
+ 1100              		.cfi_offset 14, -4
+ 1101 0002 00AF     		add	r7, sp, #0
+ 1102              	.LCFI46:
+ 1103              		.cfi_def_cfa_register 7
+ 209:Core/Src/MPU9250.c **** 	// read the WHO AM I register
+ 210:Core/Src/MPU9250.c **** 	readAK8963Registers(AK8963_WHO_AM_I,1,_buffer);
+ 1104              		.loc 1 210 2
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 21
+
+
+ 1105 0004 0023     		movs	r3, #0
+ 1106 0006 044A     		ldr	r2, .L30
+ 1107 0008 0121     		movs	r1, #1
+ 1108 000a 1846     		mov	r0, r3
+ 1109 000c FFF7FEFF 		bl	readAK8963Registers
+ 211:Core/Src/MPU9250.c **** 	// return the register value
+ 212:Core/Src/MPU9250.c **** 	return _buffer[0];
+ 1110              		.loc 1 212 16
+ 1111 0010 014B     		ldr	r3, .L30
+ 1112 0012 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 213:Core/Src/MPU9250.c **** }
+ 1113              		.loc 1 213 1
+ 1114 0014 1846     		mov	r0, r3
+ 1115 0016 80BD     		pop	{r7, pc}
+ 1116              	.L31:
+ 1117              		.align	2
+ 1118              	.L30:
+ 1119 0018 00000000 		.word	_buffer
+ 1120              		.cfi_endproc
+ 1121              	.LFE141:
+ 1123              		.section	.text.MPU9250_Init,"ax",%progbits
+ 1124              		.align	1
+ 1125              		.global	MPU9250_Init
+ 1126              		.syntax unified
+ 1127              		.thumb
+ 1128              		.thumb_func
+ 1130              	MPU9250_Init:
+ 1131              	.LFB142:
+ 214:Core/Src/MPU9250.c **** 
+ 215:Core/Src/MPU9250.c **** /* starts communication with the MPU-9250 */
+ 216:Core/Src/MPU9250.c **** uint8_t MPU9250_Init(SPI_HandleTypeDef* hspi)
+ 217:Core/Src/MPU9250.c **** {
+ 1132              		.loc 1 217 1
+ 1133              		.cfi_startproc
+ 1134              		@ args = 0, pretend = 0, frame = 16
+ 1135              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1136 0000 80B5     		push	{r7, lr}
+ 1137              	.LCFI47:
+ 1138              		.cfi_def_cfa_offset 8
+ 1139              		.cfi_offset 7, -8
+ 1140              		.cfi_offset 14, -4
+ 1141 0002 84B0     		sub	sp, sp, #16
+ 1142              	.LCFI48:
+ 1143              		.cfi_def_cfa_offset 24
+ 1144 0004 00AF     		add	r7, sp, #0
+ 1145              	.LCFI49:
+ 1146              		.cfi_def_cfa_register 7
+ 1147 0006 7860     		str	r0, [r7, #4]
+ 218:Core/Src/MPU9250.c **** 	HSPI = hspi;
+ 1148              		.loc 1 218 7
+ 1149 0008 564A     		ldr	r2, .L36
+ 1150 000a 7B68     		ldr	r3, [r7, #4]
+ 1151 000c 1360     		str	r3, [r2]
+ 219:Core/Src/MPU9250.c **** 	// select clock source to gyro
+ 220:Core/Src/MPU9250.c **** 	writeRegister(PWR_MGMNT_1, CLOCK_SEL_PLL);
+ 1152              		.loc 1 220 2
+ 1153 000e 6B23     		movs	r3, #107
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 22
+
+
+ 1154 0010 0122     		movs	r2, #1
+ 1155 0012 1146     		mov	r1, r2
+ 1156 0014 1846     		mov	r0, r3
+ 1157 0016 FFF7FEFF 		bl	writeRegister
+ 221:Core/Src/MPU9250.c **** 	// enable I2C master mode
+ 222:Core/Src/MPU9250.c **** 	writeRegister(USER_CTRL, I2C_MST_EN);
+ 1158              		.loc 1 222 2
+ 1159 001a 6A23     		movs	r3, #106
+ 1160 001c 2022     		movs	r2, #32
+ 1161 001e 1146     		mov	r1, r2
+ 1162 0020 1846     		mov	r0, r3
+ 1163 0022 FFF7FEFF 		bl	writeRegister
+ 223:Core/Src/MPU9250.c **** 	// set the I2C bus speed to 400 kHz
+ 224:Core/Src/MPU9250.c **** 	writeRegister(I2C_MST_CTRL, I2C_MST_CLK);
+ 1164              		.loc 1 224 2
+ 1165 0026 2423     		movs	r3, #36
+ 1166 0028 0D22     		movs	r2, #13
+ 1167 002a 1146     		mov	r1, r2
+ 1168 002c 1846     		mov	r0, r3
+ 1169 002e FFF7FEFF 		bl	writeRegister
+ 225:Core/Src/MPU9250.c **** 
+ 226:Core/Src/MPU9250.c **** 	// set AK8963 to Power Down
+ 227:Core/Src/MPU9250.c **** 	writeAK8963Register(AK8963_CNTL1,AK8963_PWR_DOWN);
+ 1170              		.loc 1 227 2
+ 1171 0032 0A23     		movs	r3, #10
+ 1172 0034 0022     		movs	r2, #0
+ 1173 0036 1146     		mov	r1, r2
+ 1174 0038 1846     		mov	r0, r3
+ 1175 003a FFF7FEFF 		bl	writeAK8963Register
+ 228:Core/Src/MPU9250.c **** 	// reset the MPU9250
+ 229:Core/Src/MPU9250.c **** 	writeRegister(PWR_MGMNT_1,PWR_RESET);
+ 1176              		.loc 1 229 2
+ 1177 003e 6B23     		movs	r3, #107
+ 1178 0040 8022     		movs	r2, #128
+ 1179 0042 1146     		mov	r1, r2
+ 1180 0044 1846     		mov	r0, r3
+ 1181 0046 FFF7FEFF 		bl	writeRegister
+ 230:Core/Src/MPU9250.c **** 	// wait for MPU-9250 to come back up
+ 231:Core/Src/MPU9250.c **** 	HAL_Delay(10);
+ 1182              		.loc 1 231 2
+ 1183 004a 0A20     		movs	r0, #10
+ 1184 004c FFF7FEFF 		bl	HAL_Delay
+ 232:Core/Src/MPU9250.c **** 	// reset the AK8963
+ 233:Core/Src/MPU9250.c **** 	writeAK8963Register(AK8963_CNTL2,AK8963_RESET);
+ 1185              		.loc 1 233 2
+ 1186 0050 0B23     		movs	r3, #11
+ 1187 0052 0122     		movs	r2, #1
+ 1188 0054 1146     		mov	r1, r2
+ 1189 0056 1846     		mov	r0, r3
+ 1190 0058 FFF7FEFF 		bl	writeAK8963Register
+ 234:Core/Src/MPU9250.c **** 	// select clock source to gyro
+ 235:Core/Src/MPU9250.c **** 	writeRegister(PWR_MGMNT_1,CLOCK_SEL_PLL);
+ 1191              		.loc 1 235 2
+ 1192 005c 6B23     		movs	r3, #107
+ 1193 005e 0122     		movs	r2, #1
+ 1194 0060 1146     		mov	r1, r2
+ 1195 0062 1846     		mov	r0, r3
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 23
+
+
+ 1196 0064 FFF7FEFF 		bl	writeRegister
+ 236:Core/Src/MPU9250.c **** 
+ 237:Core/Src/MPU9250.c **** 	// check the WHO AM I byte, expected value is 0x71 (decimal 113) or 0x73 (decimal 115)
+ 238:Core/Src/MPU9250.c **** 	uint8_t who = whoAmI();
+ 1197              		.loc 1 238 16
+ 1198 0068 FFF7FEFF 		bl	whoAmI
+ 1199 006c 0346     		mov	r3, r0
+ 1200 006e FB73     		strb	r3, [r7, #15]
+ 239:Core/Src/MPU9250.c **** 	if((who != 0x71) &&( who != 0x70))
+ 1201              		.loc 1 239 4
+ 1202 0070 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1203 0072 712B     		cmp	r3, #113
+ 1204 0074 04D0     		beq	.L33
+ 1205              		.loc 1 239 19 discriminator 1
+ 1206 0076 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1207 0078 702B     		cmp	r3, #112
+ 1208 007a 01D0     		beq	.L33
+ 240:Core/Src/MPU9250.c **** 	{
+ 241:Core/Src/MPU9250.c **** 		return who;
+ 1209              		.loc 1 241 10
+ 1210 007c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1211 007e 6CE0     		b	.L34
+ 1212              	.L33:
+ 242:Core/Src/MPU9250.c **** 	}
+ 243:Core/Src/MPU9250.c **** 
+ 244:Core/Src/MPU9250.c **** 	// enable accelerometer and gyro
+ 245:Core/Src/MPU9250.c **** 	writeRegister(PWR_MGMNT_2,SEN_ENABLE);
+ 1213              		.loc 1 245 2
+ 1214 0080 6C23     		movs	r3, #108
+ 1215 0082 0022     		movs	r2, #0
+ 1216 0084 1146     		mov	r1, r2
+ 1217 0086 1846     		mov	r0, r3
+ 1218 0088 FFF7FEFF 		bl	writeRegister
+ 246:Core/Src/MPU9250.c **** 
+ 247:Core/Src/MPU9250.c **** 	// setting accel range to 16G as default
+ 248:Core/Src/MPU9250.c **** 	writeRegister(ACCEL_CONFIG,ACCEL_FS_SEL_16G);
+ 1219              		.loc 1 248 2
+ 1220 008c 1C23     		movs	r3, #28
+ 1221 008e 1822     		movs	r2, #24
+ 1222 0090 1146     		mov	r1, r2
+ 1223 0092 1846     		mov	r0, r3
+ 1224 0094 FFF7FEFF 		bl	writeRegister
+ 249:Core/Src/MPU9250.c **** 
+ 250:Core/Src/MPU9250.c **** 	// setting the gyro range to 2000DPS as default
+ 251:Core/Src/MPU9250.c **** 	writeRegister(GYRO_CONFIG,GYRO_FS_SEL_250DPS);
+ 1225              		.loc 1 251 2
+ 1226 0098 1B23     		movs	r3, #27
+ 1227 009a 0022     		movs	r2, #0
+ 1228 009c 1146     		mov	r1, r2
+ 1229 009e 1846     		mov	r0, r3
+ 1230 00a0 FFF7FEFF 		bl	writeRegister
+ 252:Core/Src/MPU9250.c **** 
+ 253:Core/Src/MPU9250.c **** 	// setting bandwidth to 184Hz as default
+ 254:Core/Src/MPU9250.c **** 	writeRegister(ACCEL_CONFIG2,DLPF_184);
+ 1231              		.loc 1 254 2
+ 1232 00a4 1D23     		movs	r3, #29
+ 1233 00a6 0122     		movs	r2, #1
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 24
+
+
+ 1234 00a8 1146     		mov	r1, r2
+ 1235 00aa 1846     		mov	r0, r3
+ 1236 00ac FFF7FEFF 		bl	writeRegister
+ 255:Core/Src/MPU9250.c **** 
+ 256:Core/Src/MPU9250.c **** 	// setting gyro bandwidth to 184Hz
+ 257:Core/Src/MPU9250.c **** 	writeRegister(CONFIG,DLPF_184);
+ 1237              		.loc 1 257 2
+ 1238 00b0 1A23     		movs	r3, #26
+ 1239 00b2 0122     		movs	r2, #1
+ 1240 00b4 1146     		mov	r1, r2
+ 1241 00b6 1846     		mov	r0, r3
+ 1242 00b8 FFF7FEFF 		bl	writeRegister
+ 258:Core/Src/MPU9250.c **** 
+ 259:Core/Src/MPU9250.c **** 	// setting the sample rate divider to 0 as default
+ 260:Core/Src/MPU9250.c **** 	writeRegister(SMPDIV,0x00);
+ 1243              		.loc 1 260 2
+ 1244 00bc 1923     		movs	r3, #25
+ 1245 00be 0021     		movs	r1, #0
+ 1246 00c0 1846     		mov	r0, r3
+ 1247 00c2 FFF7FEFF 		bl	writeRegister
+ 261:Core/Src/MPU9250.c **** 
+ 262:Core/Src/MPU9250.c **** 	// enable I2C master mode
+ 263:Core/Src/MPU9250.c **** 	writeRegister(USER_CTRL,I2C_MST_EN);
+ 1248              		.loc 1 263 2
+ 1249 00c6 6A23     		movs	r3, #106
+ 1250 00c8 2022     		movs	r2, #32
+ 1251 00ca 1146     		mov	r1, r2
+ 1252 00cc 1846     		mov	r0, r3
+ 1253 00ce FFF7FEFF 		bl	writeRegister
+ 264:Core/Src/MPU9250.c **** 
+ 265:Core/Src/MPU9250.c **** 	// set the I2C bus speed to 400 kHz
+ 266:Core/Src/MPU9250.c **** 	writeRegister(I2C_MST_CTRL,I2C_MST_CLK);
+ 1254              		.loc 1 266 2
+ 1255 00d2 2423     		movs	r3, #36
+ 1256 00d4 0D22     		movs	r2, #13
+ 1257 00d6 1146     		mov	r1, r2
+ 1258 00d8 1846     		mov	r0, r3
+ 1259 00da FFF7FEFF 		bl	writeRegister
+ 267:Core/Src/MPU9250.c **** 
+ 268:Core/Src/MPU9250.c **** 	// check AK8963 WHO AM I register, expected value is 0x48 (decimal 72)
+ 269:Core/Src/MPU9250.c **** 	if( whoAmIAK8963() != 0x48 )
+ 1260              		.loc 1 269 6
+ 1261 00de FFF7FEFF 		bl	whoAmIAK8963
+ 1262 00e2 0346     		mov	r3, r0
+ 1263              		.loc 1 269 4
+ 1264 00e4 482B     		cmp	r3, #72
+ 1265 00e6 01D0     		beq	.L35
+ 270:Core/Src/MPU9250.c **** 	{
+ 271:Core/Src/MPU9250.c **** 		return 1;
+ 1266              		.loc 1 271 10
+ 1267 00e8 0123     		movs	r3, #1
+ 1268 00ea 36E0     		b	.L34
+ 1269              	.L35:
+ 272:Core/Src/MPU9250.c **** 	}
+ 273:Core/Src/MPU9250.c **** 
+ 274:Core/Src/MPU9250.c **** 	/* get the magnetometer calibration */
+ 275:Core/Src/MPU9250.c **** 	// set AK8963 to Power Down
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 25
+
+
+ 276:Core/Src/MPU9250.c **** 	writeAK8963Register(AK8963_CNTL1,AK8963_PWR_DOWN);
+ 1270              		.loc 1 276 2
+ 1271 00ec 0A23     		movs	r3, #10
+ 1272 00ee 0022     		movs	r2, #0
+ 1273 00f0 1146     		mov	r1, r2
+ 1274 00f2 1846     		mov	r0, r3
+ 1275 00f4 FFF7FEFF 		bl	writeAK8963Register
+ 277:Core/Src/MPU9250.c **** 
+ 278:Core/Src/MPU9250.c **** 	HAL_Delay(100); // long wait between AK8963 mode changes
+ 1276              		.loc 1 278 2
+ 1277 00f8 6420     		movs	r0, #100
+ 1278 00fa FFF7FEFF 		bl	HAL_Delay
+ 279:Core/Src/MPU9250.c **** 
+ 280:Core/Src/MPU9250.c **** 	// set AK8963 to FUSE ROM access
+ 281:Core/Src/MPU9250.c **** 	writeAK8963Register(AK8963_CNTL1,AK8963_FUSE_ROM);
+ 1279              		.loc 1 281 2
+ 1280 00fe 0A23     		movs	r3, #10
+ 1281 0100 0F22     		movs	r2, #15
+ 1282 0102 1146     		mov	r1, r2
+ 1283 0104 1846     		mov	r0, r3
+ 1284 0106 FFF7FEFF 		bl	writeAK8963Register
+ 282:Core/Src/MPU9250.c **** 
+ 283:Core/Src/MPU9250.c **** 	// long wait between AK8963 mode changes
+ 284:Core/Src/MPU9250.c **** 	HAL_Delay(100);
+ 1285              		.loc 1 284 2
+ 1286 010a 6420     		movs	r0, #100
+ 1287 010c FFF7FEFF 		bl	HAL_Delay
+ 285:Core/Src/MPU9250.c **** 
+ 286:Core/Src/MPU9250.c **** 	// read the AK8963 ASA registers and compute magnetometer scale factors
+ 287:Core/Src/MPU9250.c **** 	readAK8963Registers(AK8963_ASA, 3, _mag_adjust);
+ 1288              		.loc 1 287 2
+ 1289 0110 1023     		movs	r3, #16
+ 1290 0112 154A     		ldr	r2, .L36+4
+ 1291 0114 0321     		movs	r1, #3
+ 1292 0116 1846     		mov	r0, r3
+ 1293 0118 FFF7FEFF 		bl	readAK8963Registers
+ 288:Core/Src/MPU9250.c **** 
+ 289:Core/Src/MPU9250.c **** 	// set AK8963 to Power Down
+ 290:Core/Src/MPU9250.c **** 	writeAK8963Register(AK8963_CNTL1,AK8963_PWR_DOWN);
+ 1294              		.loc 1 290 2
+ 1295 011c 0A23     		movs	r3, #10
+ 1296 011e 0022     		movs	r2, #0
+ 1297 0120 1146     		mov	r1, r2
+ 1298 0122 1846     		mov	r0, r3
+ 1299 0124 FFF7FEFF 		bl	writeAK8963Register
+ 291:Core/Src/MPU9250.c **** 
+ 292:Core/Src/MPU9250.c **** 	// long wait between AK8963 mode changes
+ 293:Core/Src/MPU9250.c **** 	HAL_Delay(100);
+ 1300              		.loc 1 293 2
+ 1301 0128 6420     		movs	r0, #100
+ 1302 012a FFF7FEFF 		bl	HAL_Delay
+ 294:Core/Src/MPU9250.c **** 
+ 295:Core/Src/MPU9250.c **** 	// set AK8963 to 16 bit resolution, 100 Hz update rate
+ 296:Core/Src/MPU9250.c **** 	writeAK8963Register(AK8963_CNTL1,AK8963_CNT_MEAS2);
+ 1303              		.loc 1 296 2
+ 1304 012e 0A23     		movs	r3, #10
+ 1305 0130 1622     		movs	r2, #22
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 26
+
+
+ 1306 0132 1146     		mov	r1, r2
+ 1307 0134 1846     		mov	r0, r3
+ 1308 0136 FFF7FEFF 		bl	writeAK8963Register
+ 297:Core/Src/MPU9250.c **** 
+ 298:Core/Src/MPU9250.c **** 	// long wait between AK8963 mode changes
+ 299:Core/Src/MPU9250.c **** 	HAL_Delay(100);
+ 1309              		.loc 1 299 2
+ 1310 013a 6420     		movs	r0, #100
+ 1311 013c FFF7FEFF 		bl	HAL_Delay
+ 300:Core/Src/MPU9250.c **** 
+ 301:Core/Src/MPU9250.c **** 	// select clock source to gyro
+ 302:Core/Src/MPU9250.c **** 	writeRegister(PWR_MGMNT_1,CLOCK_SEL_PLL);
+ 1312              		.loc 1 302 2
+ 1313 0140 6B23     		movs	r3, #107
+ 1314 0142 0122     		movs	r2, #1
+ 1315 0144 1146     		mov	r1, r2
+ 1316 0146 1846     		mov	r0, r3
+ 1317 0148 FFF7FEFF 		bl	writeRegister
+ 303:Core/Src/MPU9250.c **** 
+ 304:Core/Src/MPU9250.c **** 	// instruct the MPU9250 to get 7 bytes of data from the AK8963 at the sample rate
+ 305:Core/Src/MPU9250.c **** 	readAK8963Registers(AK8963_HXL,7,_buffer);
+ 1318              		.loc 1 305 2
+ 1319 014c 0323     		movs	r3, #3
+ 1320 014e 074A     		ldr	r2, .L36+8
+ 1321 0150 0721     		movs	r1, #7
+ 1322 0152 1846     		mov	r0, r3
+ 1323 0154 FFF7FEFF 		bl	readAK8963Registers
+ 306:Core/Src/MPU9250.c **** 
+ 307:Core/Src/MPU9250.c **** 	// successful init, return 0
+ 308:Core/Src/MPU9250.c **** 	return who;
+ 1324              		.loc 1 308 9
+ 1325 0158 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1326              	.L34:
+ 309:Core/Src/MPU9250.c **** }
+ 1327              		.loc 1 309 1
+ 1328 015a 1846     		mov	r0, r3
+ 1329 015c 1037     		adds	r7, r7, #16
+ 1330              	.LCFI50:
+ 1331              		.cfi_def_cfa_offset 8
+ 1332 015e BD46     		mov	sp, r7
+ 1333              	.LCFI51:
+ 1334              		.cfi_def_cfa_register 13
+ 1335              		@ sp needed
+ 1336 0160 80BD     		pop	{r7, pc}
+ 1337              	.L37:
+ 1338 0162 00BF     		.align	2
+ 1339              	.L36:
+ 1340 0164 00000000 		.word	HSPI
+ 1341 0168 00000000 		.word	_mag_adjust
+ 1342 016c 00000000 		.word	_buffer
+ 1343              		.cfi_endproc
+ 1344              	.LFE142:
+ 1346              		.section	.text.MPU9250_SetAccelRange,"ax",%progbits
+ 1347              		.align	1
+ 1348              		.global	MPU9250_SetAccelRange
+ 1349              		.syntax unified
+ 1350              		.thumb
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 27
+
+
+ 1351              		.thumb_func
+ 1353              	MPU9250_SetAccelRange:
+ 1354              	.LFB143:
+ 310:Core/Src/MPU9250.c **** 
+ 311:Core/Src/MPU9250.c **** /* sets the accelerometer full scale range to values other than default */
+ 312:Core/Src/MPU9250.c **** void MPU9250_SetAccelRange(AccelRange range)
+ 313:Core/Src/MPU9250.c **** {
+ 1355              		.loc 1 313 1
+ 1356              		.cfi_startproc
+ 1357              		@ args = 0, pretend = 0, frame = 8
+ 1358              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1359 0000 80B5     		push	{r7, lr}
+ 1360              	.LCFI52:
+ 1361              		.cfi_def_cfa_offset 8
+ 1362              		.cfi_offset 7, -8
+ 1363              		.cfi_offset 14, -4
+ 1364 0002 82B0     		sub	sp, sp, #8
+ 1365              	.LCFI53:
+ 1366              		.cfi_def_cfa_offset 16
+ 1367 0004 00AF     		add	r7, sp, #0
+ 1368              	.LCFI54:
+ 1369              		.cfi_def_cfa_register 7
+ 1370 0006 0346     		mov	r3, r0
+ 1371 0008 FB71     		strb	r3, [r7, #7]
+ 314:Core/Src/MPU9250.c **** 	writeRegister(ACCEL_CONFIG, range);
+ 1372              		.loc 1 314 2
+ 1373 000a 1C22     		movs	r2, #28
+ 1374 000c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1375 000e 1946     		mov	r1, r3
+ 1376 0010 1046     		mov	r0, r2
+ 1377 0012 FFF7FEFF 		bl	writeRegister
+ 315:Core/Src/MPU9250.c **** }
+ 1378              		.loc 1 315 1
+ 1379 0016 00BF     		nop
+ 1380 0018 0837     		adds	r7, r7, #8
+ 1381              	.LCFI55:
+ 1382              		.cfi_def_cfa_offset 8
+ 1383 001a BD46     		mov	sp, r7
+ 1384              	.LCFI56:
+ 1385              		.cfi_def_cfa_register 13
+ 1386              		@ sp needed
+ 1387 001c 80BD     		pop	{r7, pc}
+ 1388              		.cfi_endproc
+ 1389              	.LFE143:
+ 1391              		.section	.text.MPU9250_SetGyroRange,"ax",%progbits
+ 1392              		.align	1
+ 1393              		.global	MPU9250_SetGyroRange
+ 1394              		.syntax unified
+ 1395              		.thumb
+ 1396              		.thumb_func
+ 1398              	MPU9250_SetGyroRange:
+ 1399              	.LFB144:
+ 316:Core/Src/MPU9250.c **** 
+ 317:Core/Src/MPU9250.c **** /* sets the gyro full scale range to values other than default */
+ 318:Core/Src/MPU9250.c **** void MPU9250_SetGyroRange(GyroRange range)
+ 319:Core/Src/MPU9250.c **** {
+ 1400              		.loc 1 319 1
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 28
+
+
+ 1401              		.cfi_startproc
+ 1402              		@ args = 0, pretend = 0, frame = 8
+ 1403              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1404 0000 80B5     		push	{r7, lr}
+ 1405              	.LCFI57:
+ 1406              		.cfi_def_cfa_offset 8
+ 1407              		.cfi_offset 7, -8
+ 1408              		.cfi_offset 14, -4
+ 1409 0002 82B0     		sub	sp, sp, #8
+ 1410              	.LCFI58:
+ 1411              		.cfi_def_cfa_offset 16
+ 1412 0004 00AF     		add	r7, sp, #0
+ 1413              	.LCFI59:
+ 1414              		.cfi_def_cfa_register 7
+ 1415 0006 0346     		mov	r3, r0
+ 1416 0008 FB71     		strb	r3, [r7, #7]
+ 320:Core/Src/MPU9250.c **** 	writeRegister(GYRO_CONFIG, range);
+ 1417              		.loc 1 320 2
+ 1418 000a 1B22     		movs	r2, #27
+ 1419 000c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1420 000e 1946     		mov	r1, r3
+ 1421 0010 1046     		mov	r0, r2
+ 1422 0012 FFF7FEFF 		bl	writeRegister
+ 321:Core/Src/MPU9250.c **** }
+ 1423              		.loc 1 321 1
+ 1424 0016 00BF     		nop
+ 1425 0018 0837     		adds	r7, r7, #8
+ 1426              	.LCFI60:
+ 1427              		.cfi_def_cfa_offset 8
+ 1428 001a BD46     		mov	sp, r7
+ 1429              	.LCFI61:
+ 1430              		.cfi_def_cfa_register 13
+ 1431              		@ sp needed
+ 1432 001c 80BD     		pop	{r7, pc}
+ 1433              		.cfi_endproc
+ 1434              	.LFE144:
+ 1436              		.section	.text.MPU9250_SetDLPFBandwidth,"ax",%progbits
+ 1437              		.align	1
+ 1438              		.global	MPU9250_SetDLPFBandwidth
+ 1439              		.syntax unified
+ 1440              		.thumb
+ 1441              		.thumb_func
+ 1443              	MPU9250_SetDLPFBandwidth:
+ 1444              	.LFB145:
+ 322:Core/Src/MPU9250.c **** 
+ 323:Core/Src/MPU9250.c **** /* sets the DLPF bandwidth to values other than default */
+ 324:Core/Src/MPU9250.c **** void MPU9250_SetDLPFBandwidth(DLPFBandwidth bandwidth)
+ 325:Core/Src/MPU9250.c **** {
+ 1445              		.loc 1 325 1
+ 1446              		.cfi_startproc
+ 1447              		@ args = 0, pretend = 0, frame = 8
+ 1448              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1449 0000 80B5     		push	{r7, lr}
+ 1450              	.LCFI62:
+ 1451              		.cfi_def_cfa_offset 8
+ 1452              		.cfi_offset 7, -8
+ 1453              		.cfi_offset 14, -4
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 29
+
+
+ 1454 0002 82B0     		sub	sp, sp, #8
+ 1455              	.LCFI63:
+ 1456              		.cfi_def_cfa_offset 16
+ 1457 0004 00AF     		add	r7, sp, #0
+ 1458              	.LCFI64:
+ 1459              		.cfi_def_cfa_register 7
+ 1460 0006 0346     		mov	r3, r0
+ 1461 0008 FB71     		strb	r3, [r7, #7]
+ 326:Core/Src/MPU9250.c **** 	writeRegister(ACCEL_CONFIG2,bandwidth);
+ 1462              		.loc 1 326 2
+ 1463 000a 1D22     		movs	r2, #29
+ 1464 000c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1465 000e 1946     		mov	r1, r3
+ 1466 0010 1046     		mov	r0, r2
+ 1467 0012 FFF7FEFF 		bl	writeRegister
+ 327:Core/Src/MPU9250.c **** 	writeRegister(CONFIG,bandwidth);
+ 1468              		.loc 1 327 2
+ 1469 0016 1A22     		movs	r2, #26
+ 1470 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1471 001a 1946     		mov	r1, r3
+ 1472 001c 1046     		mov	r0, r2
+ 1473 001e FFF7FEFF 		bl	writeRegister
+ 328:Core/Src/MPU9250.c **** }
+ 1474              		.loc 1 328 1
+ 1475 0022 00BF     		nop
+ 1476 0024 0837     		adds	r7, r7, #8
+ 1477              	.LCFI65:
+ 1478              		.cfi_def_cfa_offset 8
+ 1479 0026 BD46     		mov	sp, r7
+ 1480              	.LCFI66:
+ 1481              		.cfi_def_cfa_register 13
+ 1482              		@ sp needed
+ 1483 0028 80BD     		pop	{r7, pc}
+ 1484              		.cfi_endproc
+ 1485              	.LFE145:
+ 1487              		.section	.text.MPU9250_SetSampleRateDivider,"ax",%progbits
+ 1488              		.align	1
+ 1489              		.global	MPU9250_SetSampleRateDivider
+ 1490              		.syntax unified
+ 1491              		.thumb
+ 1492              		.thumb_func
+ 1494              	MPU9250_SetSampleRateDivider:
+ 1495              	.LFB146:
+ 329:Core/Src/MPU9250.c **** 
+ 330:Core/Src/MPU9250.c **** /* sets the sample rate divider to values other than default */
+ 331:Core/Src/MPU9250.c **** void MPU9250_SetSampleRateDivider(SampleRateDivider srd)
+ 332:Core/Src/MPU9250.c **** {
+ 1496              		.loc 1 332 1
+ 1497              		.cfi_startproc
+ 1498              		@ args = 0, pretend = 0, frame = 8
+ 1499              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1500 0000 80B5     		push	{r7, lr}
+ 1501              	.LCFI67:
+ 1502              		.cfi_def_cfa_offset 8
+ 1503              		.cfi_offset 7, -8
+ 1504              		.cfi_offset 14, -4
+ 1505 0002 82B0     		sub	sp, sp, #8
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 30
+
+
+ 1506              	.LCFI68:
+ 1507              		.cfi_def_cfa_offset 16
+ 1508 0004 00AF     		add	r7, sp, #0
+ 1509              	.LCFI69:
+ 1510              		.cfi_def_cfa_register 7
+ 1511 0006 0346     		mov	r3, r0
+ 1512 0008 FB71     		strb	r3, [r7, #7]
+ 333:Core/Src/MPU9250.c **** 	/* setting the sample rate divider to 19 to facilitate setting up magnetometer */
+ 334:Core/Src/MPU9250.c **** 	writeRegister(SMPDIV,19);
+ 1513              		.loc 1 334 2
+ 1514 000a 1923     		movs	r3, #25
+ 1515 000c 1321     		movs	r1, #19
+ 1516 000e 1846     		mov	r0, r3
+ 1517 0010 FFF7FEFF 		bl	writeRegister
+ 335:Core/Src/MPU9250.c **** 
+ 336:Core/Src/MPU9250.c **** 	if(srd > 9)
+ 1518              		.loc 1 336 4
+ 1519 0014 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1520 0016 092B     		cmp	r3, #9
+ 1521 0018 18D9     		bls	.L42
+ 337:Core/Src/MPU9250.c **** 	{
+ 338:Core/Src/MPU9250.c **** 		// set AK8963 to Power Down
+ 339:Core/Src/MPU9250.c **** 		writeAK8963Register(AK8963_CNTL1,AK8963_PWR_DOWN);
+ 1522              		.loc 1 339 3
+ 1523 001a 0A23     		movs	r3, #10
+ 1524 001c 0022     		movs	r2, #0
+ 1525 001e 1146     		mov	r1, r2
+ 1526 0020 1846     		mov	r0, r3
+ 1527 0022 FFF7FEFF 		bl	writeAK8963Register
+ 340:Core/Src/MPU9250.c **** 
+ 341:Core/Src/MPU9250.c **** 		// long wait between AK8963 mode changes
+ 342:Core/Src/MPU9250.c **** 		HAL_Delay(100);
+ 1528              		.loc 1 342 3
+ 1529 0026 6420     		movs	r0, #100
+ 1530 0028 FFF7FEFF 		bl	HAL_Delay
+ 343:Core/Src/MPU9250.c **** 
+ 344:Core/Src/MPU9250.c **** 		// set AK8963 to 16 bit resolution, 8 Hz update rate
+ 345:Core/Src/MPU9250.c **** 		writeAK8963Register(AK8963_CNTL1,AK8963_CNT_MEAS1);
+ 1531              		.loc 1 345 3
+ 1532 002c 0A23     		movs	r3, #10
+ 1533 002e 1222     		movs	r2, #18
+ 1534 0030 1146     		mov	r1, r2
+ 1535 0032 1846     		mov	r0, r3
+ 1536 0034 FFF7FEFF 		bl	writeAK8963Register
+ 346:Core/Src/MPU9250.c **** 
+ 347:Core/Src/MPU9250.c **** 		// long wait between AK8963 mode changes
+ 348:Core/Src/MPU9250.c **** 		HAL_Delay(100);
+ 1537              		.loc 1 348 3
+ 1538 0038 6420     		movs	r0, #100
+ 1539 003a FFF7FEFF 		bl	HAL_Delay
+ 349:Core/Src/MPU9250.c **** 
+ 350:Core/Src/MPU9250.c **** 		// instruct the MPU9250 to get 7 bytes of data from the AK8963 at the sample rate
+ 351:Core/Src/MPU9250.c **** 		readAK8963Registers(AK8963_HXL,7,_buffer);
+ 1540              		.loc 1 351 3
+ 1541 003e 0323     		movs	r3, #3
+ 1542 0040 134A     		ldr	r2, .L44
+ 1543 0042 0721     		movs	r1, #7
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 31
+
+
+ 1544 0044 1846     		mov	r0, r3
+ 1545 0046 FFF7FEFF 		bl	readAK8963Registers
+ 1546 004a 17E0     		b	.L43
+ 1547              	.L42:
+ 352:Core/Src/MPU9250.c **** 
+ 353:Core/Src/MPU9250.c **** 	}
+ 354:Core/Src/MPU9250.c **** 	else
+ 355:Core/Src/MPU9250.c **** 	{
+ 356:Core/Src/MPU9250.c **** 		// set AK8963 to Power Down
+ 357:Core/Src/MPU9250.c **** 		writeAK8963Register(AK8963_CNTL1,AK8963_PWR_DOWN);
+ 1548              		.loc 1 357 3
+ 1549 004c 0A23     		movs	r3, #10
+ 1550 004e 0022     		movs	r2, #0
+ 1551 0050 1146     		mov	r1, r2
+ 1552 0052 1846     		mov	r0, r3
+ 1553 0054 FFF7FEFF 		bl	writeAK8963Register
+ 358:Core/Src/MPU9250.c **** 		// long wait between AK8963 mode changes
+ 359:Core/Src/MPU9250.c **** 		HAL_Delay(100);
+ 1554              		.loc 1 359 3
+ 1555 0058 6420     		movs	r0, #100
+ 1556 005a FFF7FEFF 		bl	HAL_Delay
+ 360:Core/Src/MPU9250.c **** 		// set AK8963 to 16 bit resolution, 100 Hz update rate
+ 361:Core/Src/MPU9250.c **** 		writeAK8963Register(AK8963_CNTL1,AK8963_CNT_MEAS2);
+ 1557              		.loc 1 361 3
+ 1558 005e 0A23     		movs	r3, #10
+ 1559 0060 1622     		movs	r2, #22
+ 1560 0062 1146     		mov	r1, r2
+ 1561 0064 1846     		mov	r0, r3
+ 1562 0066 FFF7FEFF 		bl	writeAK8963Register
+ 362:Core/Src/MPU9250.c **** 
+ 363:Core/Src/MPU9250.c **** 		// long wait between AK8963 mode changes
+ 364:Core/Src/MPU9250.c **** 		HAL_Delay(100);
+ 1563              		.loc 1 364 3
+ 1564 006a 6420     		movs	r0, #100
+ 1565 006c FFF7FEFF 		bl	HAL_Delay
+ 365:Core/Src/MPU9250.c **** 
+ 366:Core/Src/MPU9250.c **** 		// instruct the MPU9250 to get 7 bytes of data from the AK8963 at the sample rate
+ 367:Core/Src/MPU9250.c **** 		readAK8963Registers(AK8963_HXL,7,_buffer);
+ 1566              		.loc 1 367 3
+ 1567 0070 0323     		movs	r3, #3
+ 1568 0072 074A     		ldr	r2, .L44
+ 1569 0074 0721     		movs	r1, #7
+ 1570 0076 1846     		mov	r0, r3
+ 1571 0078 FFF7FEFF 		bl	readAK8963Registers
+ 1572              	.L43:
+ 368:Core/Src/MPU9250.c **** 	}
+ 369:Core/Src/MPU9250.c **** 
+ 370:Core/Src/MPU9250.c **** 	writeRegister(SMPDIV, srd);
+ 1573              		.loc 1 370 2
+ 1574 007c 1922     		movs	r2, #25
+ 1575 007e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1576 0080 1946     		mov	r1, r3
+ 1577 0082 1046     		mov	r0, r2
+ 1578 0084 FFF7FEFF 		bl	writeRegister
+ 371:Core/Src/MPU9250.c **** }
+ 1579              		.loc 1 371 1
+ 1580 0088 00BF     		nop
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 32
+
+
+ 1581 008a 0837     		adds	r7, r7, #8
+ 1582              	.LCFI70:
+ 1583              		.cfi_def_cfa_offset 8
+ 1584 008c BD46     		mov	sp, r7
+ 1585              	.LCFI71:
+ 1586              		.cfi_def_cfa_register 13
+ 1587              		@ sp needed
+ 1588 008e 80BD     		pop	{r7, pc}
+ 1589              	.L45:
+ 1590              		.align	2
+ 1591              	.L44:
+ 1592 0090 00000000 		.word	_buffer
+ 1593              		.cfi_endproc
+ 1594              	.LFE146:
+ 1596              		.section	.text.MPU9250_GetData,"ax",%progbits
+ 1597              		.align	1
+ 1598              		.global	MPU9250_GetData
+ 1599              		.syntax unified
+ 1600              		.thumb
+ 1601              		.thumb_func
+ 1603              	MPU9250_GetData:
+ 1604              	.LFB147:
+ 372:Core/Src/MPU9250.c **** 
+ 373:Core/Src/MPU9250.c **** /* read the data, each argiment should point to a array for x, y, and x */
+ 374:Core/Src/MPU9250.c **** void MPU9250_GetData(int16_t* AccData, int16_t* MagData, int16_t* GyroData)
+ 375:Core/Src/MPU9250.c **** {
+ 1605              		.loc 1 375 1
+ 1606              		.cfi_startproc
+ 1607              		@ args = 0, pretend = 0, frame = 24
+ 1608              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1609 0000 80B5     		push	{r7, lr}
+ 1610              	.LCFI72:
+ 1611              		.cfi_def_cfa_offset 8
+ 1612              		.cfi_offset 7, -8
+ 1613              		.cfi_offset 14, -4
+ 1614 0002 86B0     		sub	sp, sp, #24
+ 1615              	.LCFI73:
+ 1616              		.cfi_def_cfa_offset 32
+ 1617 0004 00AF     		add	r7, sp, #0
+ 1618              	.LCFI74:
+ 1619              		.cfi_def_cfa_register 7
+ 1620 0006 F860     		str	r0, [r7, #12]
+ 1621 0008 B960     		str	r1, [r7, #8]
+ 1622 000a 7A60     		str	r2, [r7, #4]
+ 376:Core/Src/MPU9250.c **** 	// grab the data from the MPU9250
+ 377:Core/Src/MPU9250.c **** 	readRegisters(ACCEL_OUT, 21, _buffer);
+ 1623              		.loc 1 377 2
+ 1624 000c 3B23     		movs	r3, #59
+ 1625 000e 634A     		ldr	r2, .L47
+ 1626 0010 1521     		movs	r1, #21
+ 1627 0012 1846     		mov	r0, r3
+ 1628 0014 FFF7FEFF 		bl	readRegisters
+ 378:Core/Src/MPU9250.c **** 
+ 379:Core/Src/MPU9250.c **** 	// combine into 16 bit values
+ 380:Core/Src/MPU9250.c **** 	AccData[0] = (((int16_t)_buffer[0]) << 8) | _buffer[1];
+ 1629              		.loc 1 380 33
+ 1630 0018 604B     		ldr	r3, .L47
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 33
+
+
+ 1631 001a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1632              		.loc 1 380 38
+ 1633 001c 1B02     		lsls	r3, r3, #8
+ 1634              		.loc 1 380 44
+ 1635 001e 1AB2     		sxth	r2, r3
+ 1636              		.loc 1 380 53
+ 1637 0020 5E4B     		ldr	r3, .L47
+ 1638 0022 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 1639 0024 1BB2     		sxth	r3, r3
+ 1640              		.loc 1 380 44
+ 1641 0026 1343     		orrs	r3, r3, r2
+ 1642 0028 1AB2     		sxth	r2, r3
+ 1643              		.loc 1 380 13
+ 1644 002a FB68     		ldr	r3, [r7, #12]
+ 1645 002c 1A80     		strh	r2, [r3]	@ movhi
+ 381:Core/Src/MPU9250.c **** 	AccData[1] = (((int16_t)_buffer[2]) << 8) | _buffer[3];
+ 1646              		.loc 1 381 33
+ 1647 002e 5B4B     		ldr	r3, .L47
+ 1648 0030 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 1649              		.loc 1 381 38
+ 1650 0032 1B02     		lsls	r3, r3, #8
+ 1651              		.loc 1 381 44
+ 1652 0034 19B2     		sxth	r1, r3
+ 1653              		.loc 1 381 53
+ 1654 0036 594B     		ldr	r3, .L47
+ 1655 0038 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 1656 003a 1AB2     		sxth	r2, r3
+ 1657              		.loc 1 381 9
+ 1658 003c FB68     		ldr	r3, [r7, #12]
+ 1659 003e 0233     		adds	r3, r3, #2
+ 1660              		.loc 1 381 44
+ 1661 0040 0A43     		orrs	r2, r2, r1
+ 1662 0042 12B2     		sxth	r2, r2
+ 1663              		.loc 1 381 13
+ 1664 0044 1A80     		strh	r2, [r3]	@ movhi
+ 382:Core/Src/MPU9250.c **** 	AccData[2] = (((int16_t)_buffer[4]) << 8) | _buffer[5];
+ 1665              		.loc 1 382 33
+ 1666 0046 554B     		ldr	r3, .L47
+ 1667 0048 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 1668              		.loc 1 382 38
+ 1669 004a 1B02     		lsls	r3, r3, #8
+ 1670              		.loc 1 382 44
+ 1671 004c 19B2     		sxth	r1, r3
+ 1672              		.loc 1 382 53
+ 1673 004e 534B     		ldr	r3, .L47
+ 1674 0050 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 1675 0052 1AB2     		sxth	r2, r3
+ 1676              		.loc 1 382 9
+ 1677 0054 FB68     		ldr	r3, [r7, #12]
+ 1678 0056 0433     		adds	r3, r3, #4
+ 1679              		.loc 1 382 44
+ 1680 0058 0A43     		orrs	r2, r2, r1
+ 1681 005a 12B2     		sxth	r2, r2
+ 1682              		.loc 1 382 13
+ 1683 005c 1A80     		strh	r2, [r3]	@ movhi
+ 383:Core/Src/MPU9250.c **** 	GyroData[0] = (((int16_t)_buffer[8]) << 8) | _buffer[9];
+ 1684              		.loc 1 383 34
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 34
+
+
+ 1685 005e 4F4B     		ldr	r3, .L47
+ 1686 0060 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1687              		.loc 1 383 39
+ 1688 0062 1B02     		lsls	r3, r3, #8
+ 1689              		.loc 1 383 45
+ 1690 0064 1AB2     		sxth	r2, r3
+ 1691              		.loc 1 383 54
+ 1692 0066 4D4B     		ldr	r3, .L47
+ 1693 0068 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 1694 006a 1BB2     		sxth	r3, r3
+ 1695              		.loc 1 383 45
+ 1696 006c 1343     		orrs	r3, r3, r2
+ 1697 006e 1AB2     		sxth	r2, r3
+ 1698              		.loc 1 383 14
+ 1699 0070 7B68     		ldr	r3, [r7, #4]
+ 1700 0072 1A80     		strh	r2, [r3]	@ movhi
+ 384:Core/Src/MPU9250.c **** 	GyroData[1] = (((int16_t)_buffer[10]) << 8) | _buffer[11];
+ 1701              		.loc 1 384 34
+ 1702 0074 494B     		ldr	r3, .L47
+ 1703 0076 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 1704              		.loc 1 384 40
+ 1705 0078 1B02     		lsls	r3, r3, #8
+ 1706              		.loc 1 384 46
+ 1707 007a 19B2     		sxth	r1, r3
+ 1708              		.loc 1 384 55
+ 1709 007c 474B     		ldr	r3, .L47
+ 1710 007e DB7A     		ldrb	r3, [r3, #11]	@ zero_extendqisi2
+ 1711 0080 1AB2     		sxth	r2, r3
+ 1712              		.loc 1 384 10
+ 1713 0082 7B68     		ldr	r3, [r7, #4]
+ 1714 0084 0233     		adds	r3, r3, #2
+ 1715              		.loc 1 384 46
+ 1716 0086 0A43     		orrs	r2, r2, r1
+ 1717 0088 12B2     		sxth	r2, r2
+ 1718              		.loc 1 384 14
+ 1719 008a 1A80     		strh	r2, [r3]	@ movhi
+ 385:Core/Src/MPU9250.c **** 	GyroData[2] = (((int16_t)_buffer[12]) << 8) | _buffer[13];
+ 1720              		.loc 1 385 34
+ 1721 008c 434B     		ldr	r3, .L47
+ 1722 008e 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 1723              		.loc 1 385 40
+ 1724 0090 1B02     		lsls	r3, r3, #8
+ 1725              		.loc 1 385 46
+ 1726 0092 19B2     		sxth	r1, r3
+ 1727              		.loc 1 385 55
+ 1728 0094 414B     		ldr	r3, .L47
+ 1729 0096 5B7B     		ldrb	r3, [r3, #13]	@ zero_extendqisi2
+ 1730 0098 1AB2     		sxth	r2, r3
+ 1731              		.loc 1 385 10
+ 1732 009a 7B68     		ldr	r3, [r7, #4]
+ 1733 009c 0433     		adds	r3, r3, #4
+ 1734              		.loc 1 385 46
+ 1735 009e 0A43     		orrs	r2, r2, r1
+ 1736 00a0 12B2     		sxth	r2, r2
+ 1737              		.loc 1 385 14
+ 1738 00a2 1A80     		strh	r2, [r3]	@ movhi
+ 386:Core/Src/MPU9250.c **** 
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 35
+
+
+ 387:Core/Src/MPU9250.c **** 	int16_t magx = (((int16_t)_buffer[15]) << 8) | _buffer[14];
+ 1739              		.loc 1 387 35
+ 1740 00a4 3D4B     		ldr	r3, .L47
+ 1741 00a6 DB7B     		ldrb	r3, [r3, #15]	@ zero_extendqisi2
+ 1742              		.loc 1 387 41
+ 1743 00a8 1B02     		lsls	r3, r3, #8
+ 1744              		.loc 1 387 47
+ 1745 00aa 1AB2     		sxth	r2, r3
+ 1746              		.loc 1 387 56
+ 1747 00ac 3B4B     		ldr	r3, .L47
+ 1748 00ae 9B7B     		ldrb	r3, [r3, #14]	@ zero_extendqisi2
+ 1749 00b0 1BB2     		sxth	r3, r3
+ 1750              		.loc 1 387 10
+ 1751 00b2 1343     		orrs	r3, r3, r2
+ 1752 00b4 FB82     		strh	r3, [r7, #22]	@ movhi
+ 388:Core/Src/MPU9250.c **** 	int16_t magy = (((int16_t)_buffer[17]) << 8) | _buffer[16];
+ 1753              		.loc 1 388 35
+ 1754 00b6 394B     		ldr	r3, .L47
+ 1755 00b8 5B7C     		ldrb	r3, [r3, #17]	@ zero_extendqisi2
+ 1756              		.loc 1 388 41
+ 1757 00ba 1B02     		lsls	r3, r3, #8
+ 1758              		.loc 1 388 47
+ 1759 00bc 1AB2     		sxth	r2, r3
+ 1760              		.loc 1 388 56
+ 1761 00be 374B     		ldr	r3, .L47
+ 1762 00c0 1B7C     		ldrb	r3, [r3, #16]	@ zero_extendqisi2
+ 1763 00c2 1BB2     		sxth	r3, r3
+ 1764              		.loc 1 388 10
+ 1765 00c4 1343     		orrs	r3, r3, r2
+ 1766 00c6 BB82     		strh	r3, [r7, #20]	@ movhi
+ 389:Core/Src/MPU9250.c **** 	int16_t magz = (((int16_t)_buffer[19]) << 8) | _buffer[18];
+ 1767              		.loc 1 389 35
+ 1768 00c8 344B     		ldr	r3, .L47
+ 1769 00ca DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 1770              		.loc 1 389 41
+ 1771 00cc 1B02     		lsls	r3, r3, #8
+ 1772              		.loc 1 389 47
+ 1773 00ce 1AB2     		sxth	r2, r3
+ 1774              		.loc 1 389 56
+ 1775 00d0 324B     		ldr	r3, .L47
+ 1776 00d2 9B7C     		ldrb	r3, [r3, #18]	@ zero_extendqisi2
+ 1777 00d4 1BB2     		sxth	r3, r3
+ 1778              		.loc 1 389 10
+ 1779 00d6 1343     		orrs	r3, r3, r2
+ 1780 00d8 7B82     		strh	r3, [r7, #18]	@ movhi
+ 390:Core/Src/MPU9250.c **** 
+ 391:Core/Src/MPU9250.c **** 	MagData[0] = (int16_t)((float)magx * ((float)(_mag_adjust[0] - 128) / 256.0f + 1.0f));
+ 1781              		.loc 1 391 25
+ 1782 00da B7F91630 		ldrsh	r3, [r7, #22]
+ 1783 00de 07EE903A 		vmov	s15, r3	@ int
+ 1784 00e2 B8EEE77A 		vcvt.f32.s32	s14, s15
+ 1785              		.loc 1 391 59
+ 1786 00e6 2E4B     		ldr	r3, .L47+4
+ 1787 00e8 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1788              		.loc 1 391 63
+ 1789 00ea 803B     		subs	r3, r3, #128
+ 1790              		.loc 1 391 40
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 36
+
+
+ 1791 00ec 07EE903A 		vmov	s15, r3	@ int
+ 1792 00f0 F8EEE76A 		vcvt.f32.s32	s13, s15
+ 1793              		.loc 1 391 70
+ 1794 00f4 9FED2B6A 		vldr.32	s12, .L47+8
+ 1795 00f8 C6EE867A 		vdiv.f32	s15, s13, s12
+ 1796              		.loc 1 391 79
+ 1797 00fc F7EE006A 		vmov.f32	s13, #1.0e+0
+ 1798 0100 77EEA67A 		vadd.f32	s15, s15, s13
+ 1799              		.loc 1 391 37
+ 1800 0104 67EE277A 		vmul.f32	s15, s14, s15
+ 1801              		.loc 1 391 15
+ 1802 0108 FDEEE77A 		vcvt.s32.f32	s15, s15
+ 1803 010c 17EE903A 		vmov	r3, s15	@ int
+ 1804 0110 1AB2     		sxth	r2, r3
+ 1805              		.loc 1 391 13
+ 1806 0112 BB68     		ldr	r3, [r7, #8]
+ 1807 0114 1A80     		strh	r2, [r3]	@ movhi
+ 392:Core/Src/MPU9250.c **** 	MagData[1] = (int16_t)((float)magy * ((float)(_mag_adjust[1] - 128) / 256.0f + 1.0f));
+ 1808              		.loc 1 392 25
+ 1809 0116 B7F91430 		ldrsh	r3, [r7, #20]
+ 1810 011a 07EE903A 		vmov	s15, r3	@ int
+ 1811 011e B8EEE77A 		vcvt.f32.s32	s14, s15
+ 1812              		.loc 1 392 59
+ 1813 0122 1F4B     		ldr	r3, .L47+4
+ 1814 0124 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 1815              		.loc 1 392 63
+ 1816 0126 803B     		subs	r3, r3, #128
+ 1817              		.loc 1 392 40
+ 1818 0128 07EE903A 		vmov	s15, r3	@ int
+ 1819 012c F8EEE76A 		vcvt.f32.s32	s13, s15
+ 1820              		.loc 1 392 70
+ 1821 0130 9FED1C6A 		vldr.32	s12, .L47+8
+ 1822 0134 C6EE867A 		vdiv.f32	s15, s13, s12
+ 1823              		.loc 1 392 79
+ 1824 0138 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 1825 013c 77EEA67A 		vadd.f32	s15, s15, s13
+ 1826              		.loc 1 392 37
+ 1827 0140 67EE277A 		vmul.f32	s15, s14, s15
+ 1828              		.loc 1 392 9
+ 1829 0144 BB68     		ldr	r3, [r7, #8]
+ 1830 0146 0233     		adds	r3, r3, #2
+ 1831              		.loc 1 392 15
+ 1832 0148 FDEEE77A 		vcvt.s32.f32	s15, s15
+ 1833 014c 17EE902A 		vmov	r2, s15	@ int
+ 1834 0150 12B2     		sxth	r2, r2
+ 1835              		.loc 1 392 13
+ 1836 0152 1A80     		strh	r2, [r3]	@ movhi
+ 393:Core/Src/MPU9250.c **** 	MagData[2] = (int16_t)((float)magz * ((float)(_mag_adjust[2] - 128) / 256.0f + 1.0f));
+ 1837              		.loc 1 393 25
+ 1838 0154 B7F91230 		ldrsh	r3, [r7, #18]
+ 1839 0158 07EE903A 		vmov	s15, r3	@ int
+ 1840 015c B8EEE77A 		vcvt.f32.s32	s14, s15
+ 1841              		.loc 1 393 59
+ 1842 0160 0F4B     		ldr	r3, .L47+4
+ 1843 0162 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 1844              		.loc 1 393 63
+ 1845 0164 803B     		subs	r3, r3, #128
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 37
+
+
+ 1846              		.loc 1 393 40
+ 1847 0166 07EE903A 		vmov	s15, r3	@ int
+ 1848 016a F8EEE76A 		vcvt.f32.s32	s13, s15
+ 1849              		.loc 1 393 70
+ 1850 016e 9FED0D6A 		vldr.32	s12, .L47+8
+ 1851 0172 C6EE867A 		vdiv.f32	s15, s13, s12
+ 1852              		.loc 1 393 79
+ 1853 0176 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 1854 017a 77EEA67A 		vadd.f32	s15, s15, s13
+ 1855              		.loc 1 393 37
+ 1856 017e 67EE277A 		vmul.f32	s15, s14, s15
+ 1857              		.loc 1 393 9
+ 1858 0182 BB68     		ldr	r3, [r7, #8]
+ 1859 0184 0433     		adds	r3, r3, #4
+ 1860              		.loc 1 393 15
+ 1861 0186 FDEEE77A 		vcvt.s32.f32	s15, s15
+ 1862 018a 17EE902A 		vmov	r2, s15	@ int
+ 1863 018e 12B2     		sxth	r2, r2
+ 1864              		.loc 1 393 13
+ 1865 0190 1A80     		strh	r2, [r3]	@ movhi
+ 394:Core/Src/MPU9250.c **** }
+ 1866              		.loc 1 394 1
+ 1867 0192 00BF     		nop
+ 1868 0194 1837     		adds	r7, r7, #24
+ 1869              	.LCFI75:
+ 1870              		.cfi_def_cfa_offset 8
+ 1871 0196 BD46     		mov	sp, r7
+ 1872              	.LCFI76:
+ 1873              		.cfi_def_cfa_register 13
+ 1874              		@ sp needed
+ 1875 0198 80BD     		pop	{r7, pc}
+ 1876              	.L48:
+ 1877 019a 00BF     		.align	2
+ 1878              	.L47:
+ 1879 019c 00000000 		.word	_buffer
+ 1880 01a0 00000000 		.word	_mag_adjust
+ 1881 01a4 00008043 		.word	1132462080
+ 1882              		.cfi_endproc
+ 1883              	.LFE147:
+ 1885              		.text
+ 1886              	.Letext0:
+ 1887              		.file 2 "c:\\gcc-arm-none-eabi\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1888              		.file 3 "c:\\gcc-arm-none-eabi\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 1889              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h"
+ 1890              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 1891              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 1892              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 1893              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
+ 1894              		.file 9 "Core/Inc/MPU9250.h"
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 38
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 MPU9250.c
+C:\msys64\tmp\cctw17Lf.s:24     .bss.HSPI:00000000 HSPI
+C:\msys64\tmp\cctw17Lf.s:21     .bss.HSPI:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:30     .rodata.READWRITE_CMD:00000000 READWRITE_CMD
+C:\msys64\tmp\cctw17Lf.s:36     .rodata.MULTIPLEBYTE_CMD:00000000 MULTIPLEBYTE_CMD
+C:\msys64\tmp\cctw17Lf.s:42     .rodata.DUMMY_BYTE:00000000 DUMMY_BYTE
+C:\msys64\tmp\cctw17Lf.s:43     .rodata.DUMMY_BYTE:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:48     .rodata._address:00000000 _address
+C:\msys64\tmp\cctw17Lf.s:55     .rodata._i2cRate:00000000 _i2cRate
+C:\msys64\tmp\cctw17Lf.s:52     .rodata._i2cRate:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:61     .rodata.ACCEL_OUT:00000000 ACCEL_OUT
+C:\msys64\tmp\cctw17Lf.s:67     .rodata.GYRO_OUT:00000000 GYRO_OUT
+C:\msys64\tmp\cctw17Lf.s:73     .rodata.TEMP_OUT:00000000 TEMP_OUT
+C:\msys64\tmp\cctw17Lf.s:79     .rodata.EXT_SENS_DATA_00:00000000 EXT_SENS_DATA_00
+C:\msys64\tmp\cctw17Lf.s:85     .rodata.ACCEL_CONFIG:00000000 ACCEL_CONFIG
+C:\msys64\tmp\cctw17Lf.s:91     .rodata.ACCEL_FS_SEL_2G:00000000 ACCEL_FS_SEL_2G
+C:\msys64\tmp\cctw17Lf.s:92     .rodata.ACCEL_FS_SEL_2G:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:97     .rodata.ACCEL_FS_SEL_4G:00000000 ACCEL_FS_SEL_4G
+C:\msys64\tmp\cctw17Lf.s:103    .rodata.ACCEL_FS_SEL_8G:00000000 ACCEL_FS_SEL_8G
+C:\msys64\tmp\cctw17Lf.s:109    .rodata.ACCEL_FS_SEL_16G:00000000 ACCEL_FS_SEL_16G
+C:\msys64\tmp\cctw17Lf.s:115    .rodata.GYRO_CONFIG:00000000 GYRO_CONFIG
+C:\msys64\tmp\cctw17Lf.s:121    .rodata.GYRO_FS_SEL_250DPS:00000000 GYRO_FS_SEL_250DPS
+C:\msys64\tmp\cctw17Lf.s:122    .rodata.GYRO_FS_SEL_250DPS:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:127    .rodata.GYRO_FS_SEL_500DPS:00000000 GYRO_FS_SEL_500DPS
+C:\msys64\tmp\cctw17Lf.s:133    .rodata.GYRO_FS_SEL_1000DPS:00000000 GYRO_FS_SEL_1000DPS
+C:\msys64\tmp\cctw17Lf.s:139    .rodata.GYRO_FS_SEL_2000DPS:00000000 GYRO_FS_SEL_2000DPS
+C:\msys64\tmp\cctw17Lf.s:145    .rodata.ACCEL_CONFIG2:00000000 ACCEL_CONFIG2
+C:\msys64\tmp\cctw17Lf.s:151    .rodata.DLPF_184:00000000 DLPF_184
+C:\msys64\tmp\cctw17Lf.s:157    .rodata.DLPF_92:00000000 DLPF_92
+C:\msys64\tmp\cctw17Lf.s:163    .rodata.DLPF_41:00000000 DLPF_41
+C:\msys64\tmp\cctw17Lf.s:169    .rodata.DLPF_20:00000000 DLPF_20
+C:\msys64\tmp\cctw17Lf.s:175    .rodata.DLPF_10:00000000 DLPF_10
+C:\msys64\tmp\cctw17Lf.s:181    .rodata.DLPF_5:00000000 DLPF_5
+C:\msys64\tmp\cctw17Lf.s:187    .rodata.CONFIG:00000000 CONFIG
+C:\msys64\tmp\cctw17Lf.s:193    .rodata.SMPDIV:00000000 SMPDIV
+C:\msys64\tmp\cctw17Lf.s:199    .rodata.INT_PIN_CFG:00000000 INT_PIN_CFG
+C:\msys64\tmp\cctw17Lf.s:205    .rodata.INT_ENABLE:00000000 INT_ENABLE
+C:\msys64\tmp\cctw17Lf.s:211    .rodata.INT_DISABLE:00000000 INT_DISABLE
+C:\msys64\tmp\cctw17Lf.s:212    .rodata.INT_DISABLE:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:217    .rodata.INT_PULSE_50US:00000000 INT_PULSE_50US
+C:\msys64\tmp\cctw17Lf.s:218    .rodata.INT_PULSE_50US:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:223    .rodata.INT_WOM_EN:00000000 INT_WOM_EN
+C:\msys64\tmp\cctw17Lf.s:229    .rodata.INT_RAW_RDY_EN:00000000 INT_RAW_RDY_EN
+C:\msys64\tmp\cctw17Lf.s:235    .rodata.PWR_MGMNT_1:00000000 PWR_MGMNT_1
+C:\msys64\tmp\cctw17Lf.s:241    .rodata.PWR_CYCLE:00000000 PWR_CYCLE
+C:\msys64\tmp\cctw17Lf.s:247    .rodata.PWR_RESET:00000000 PWR_RESET
+C:\msys64\tmp\cctw17Lf.s:253    .rodata.CLOCK_SEL_PLL:00000000 CLOCK_SEL_PLL
+C:\msys64\tmp\cctw17Lf.s:259    .rodata.PWR_MGMNT_2:00000000 PWR_MGMNT_2
+C:\msys64\tmp\cctw17Lf.s:265    .rodata.SEN_ENABLE:00000000 SEN_ENABLE
+C:\msys64\tmp\cctw17Lf.s:266    .rodata.SEN_ENABLE:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:271    .rodata.DIS_GYRO:00000000 DIS_GYRO
+C:\msys64\tmp\cctw17Lf.s:277    .rodata.USER_CTRL:00000000 USER_CTRL
+C:\msys64\tmp\cctw17Lf.s:283    .rodata.I2C_MST_EN:00000000 I2C_MST_EN
+C:\msys64\tmp\cctw17Lf.s:289    .rodata.I2C_MST_CLK:00000000 I2C_MST_CLK
+C:\msys64\tmp\cctw17Lf.s:295    .rodata.I2C_MST_CTRL:00000000 I2C_MST_CTRL
+C:\msys64\tmp\cctw17Lf.s:301    .rodata.I2C_SLV0_ADDR:00000000 I2C_SLV0_ADDR
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 39
+
+
+C:\msys64\tmp\cctw17Lf.s:307    .rodata.I2C_SLV0_REG:00000000 I2C_SLV0_REG
+C:\msys64\tmp\cctw17Lf.s:313    .rodata.I2C_SLV0_DO:00000000 I2C_SLV0_DO
+C:\msys64\tmp\cctw17Lf.s:319    .rodata.I2C_SLV0_CTRL:00000000 I2C_SLV0_CTRL
+C:\msys64\tmp\cctw17Lf.s:325    .rodata.I2C_SLV0_EN:00000000 I2C_SLV0_EN
+C:\msys64\tmp\cctw17Lf.s:331    .rodata.I2C_READ_FLAG:00000000 I2C_READ_FLAG
+C:\msys64\tmp\cctw17Lf.s:337    .rodata.MOT_DETECT_CTRL:00000000 MOT_DETECT_CTRL
+C:\msys64\tmp\cctw17Lf.s:343    .rodata.ACCEL_INTEL_EN:00000000 ACCEL_INTEL_EN
+C:\msys64\tmp\cctw17Lf.s:349    .rodata.ACCEL_INTEL_MODE:00000000 ACCEL_INTEL_MODE
+C:\msys64\tmp\cctw17Lf.s:355    .rodata.LP_ACCEL_ODR:00000000 LP_ACCEL_ODR
+C:\msys64\tmp\cctw17Lf.s:361    .rodata.WOM_THR:00000000 WOM_THR
+C:\msys64\tmp\cctw17Lf.s:367    .rodata.WHO_AM_I:00000000 WHO_AM_I
+C:\msys64\tmp\cctw17Lf.s:373    .rodata.FIFO_EN:00000000 FIFO_EN
+C:\msys64\tmp\cctw17Lf.s:379    .rodata.FIFO_TEMP:00000000 FIFO_TEMP
+C:\msys64\tmp\cctw17Lf.s:385    .rodata.FIFO_GYRO:00000000 FIFO_GYRO
+C:\msys64\tmp\cctw17Lf.s:391    .rodata.FIFO_ACCEL:00000000 FIFO_ACCEL
+C:\msys64\tmp\cctw17Lf.s:397    .rodata.FIFO_MAG:00000000 FIFO_MAG
+C:\msys64\tmp\cctw17Lf.s:403    .rodata.FIFO_COUNT:00000000 FIFO_COUNT
+C:\msys64\tmp\cctw17Lf.s:409    .rodata.FIFO_READ:00000000 FIFO_READ
+C:\msys64\tmp\cctw17Lf.s:415    .rodata.AK8963_I2C_ADDR:00000000 AK8963_I2C_ADDR
+C:\msys64\tmp\cctw17Lf.s:421    .rodata.AK8963_HXL:00000000 AK8963_HXL
+C:\msys64\tmp\cctw17Lf.s:427    .rodata.AK8963_CNTL1:00000000 AK8963_CNTL1
+C:\msys64\tmp\cctw17Lf.s:433    .rodata.AK8963_PWR_DOWN:00000000 AK8963_PWR_DOWN
+C:\msys64\tmp\cctw17Lf.s:434    .rodata.AK8963_PWR_DOWN:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:439    .rodata.AK8963_CNT_MEAS1:00000000 AK8963_CNT_MEAS1
+C:\msys64\tmp\cctw17Lf.s:445    .rodata.AK8963_CNT_MEAS2:00000000 AK8963_CNT_MEAS2
+C:\msys64\tmp\cctw17Lf.s:451    .rodata.AK8963_FUSE_ROM:00000000 AK8963_FUSE_ROM
+C:\msys64\tmp\cctw17Lf.s:457    .rodata.AK8963_CNTL2:00000000 AK8963_CNTL2
+C:\msys64\tmp\cctw17Lf.s:463    .rodata.AK8963_RESET:00000000 AK8963_RESET
+C:\msys64\tmp\cctw17Lf.s:469    .rodata.AK8963_ASA:00000000 AK8963_ASA
+C:\msys64\tmp\cctw17Lf.s:475    .rodata.AK8963_WHO_AM_I:00000000 AK8963_WHO_AM_I
+C:\msys64\tmp\cctw17Lf.s:476    .rodata.AK8963_WHO_AM_I:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:478    .bss._buffer:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:481    .bss._buffer:00000000 _buffer
+C:\msys64\tmp\cctw17Lf.s:484    .bss._mag_adjust:00000000 $d
+C:\msys64\tmp\cctw17Lf.s:487    .bss._mag_adjust:00000000 _mag_adjust
+C:\msys64\tmp\cctw17Lf.s:490    .text.MPU9250_OnActivate:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:496    .text.MPU9250_OnActivate:00000000 MPU9250_OnActivate
+C:\msys64\tmp\cctw17Lf.s:526    .text.MPU9250_Activate:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:531    .text.MPU9250_Activate:00000000 MPU9250_Activate
+C:\msys64\tmp\cctw17Lf.s:558    .text.MPU9250_Activate:00000018 $d
+C:\msys64\tmp\cctw17Lf.s:563    .text.MPU9250_Deactivate:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:568    .text.MPU9250_Deactivate:00000000 MPU9250_Deactivate
+C:\msys64\tmp\cctw17Lf.s:593    .text.MPU9250_Deactivate:00000014 $d
+C:\msys64\tmp\cctw17Lf.s:598    .text.SPIx_WriteRead:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:604    .text.SPIx_WriteRead:00000000 SPIx_WriteRead
+C:\msys64\tmp\cctw17Lf.s:659    .text.SPIx_WriteRead:00000038 $d
+C:\msys64\tmp\cctw17Lf.s:664    .text.MPU_SPI_Write:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:670    .text.MPU_SPI_Write:00000000 MPU_SPI_Write
+C:\msys64\tmp\cctw17Lf.s:735    .text.MPU_SPI_Read:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:741    .text.MPU_SPI_Read:00000000 MPU_SPI_Read
+C:\msys64\tmp\cctw17Lf.s:800    .text.MPU_SPI_Read:0000004c $d
+C:\msys64\tmp\cctw17Lf.s:805    .text.writeRegister:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:811    .text.writeRegister:00000000 writeRegister
+C:\msys64\tmp\cctw17Lf.s:856    .text.readRegisters:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:862    .text.readRegisters:00000000 readRegisters
+C:\msys64\tmp\cctw17Lf.s:905    .text.writeAK8963Register:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:911    .text.writeAK8963Register:00000000 writeAK8963Register
+ARM GAS  C:\msys64\tmp\cctw17Lf.s 			page 40
+
+
+C:\msys64\tmp\cctw17Lf.s:973    .text.readAK8963Registers:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:979    .text.readAK8963Registers:00000000 readAK8963Registers
+C:\msys64\tmp\cctw17Lf.s:1046   .text.whoAmI:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1051   .text.whoAmI:00000000 whoAmI
+C:\msys64\tmp\cctw17Lf.s:1080   .text.whoAmI:00000018 $d
+C:\msys64\tmp\cctw17Lf.s:1085   .text.whoAmIAK8963:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1090   .text.whoAmIAK8963:00000000 whoAmIAK8963
+C:\msys64\tmp\cctw17Lf.s:1119   .text.whoAmIAK8963:00000018 $d
+C:\msys64\tmp\cctw17Lf.s:1124   .text.MPU9250_Init:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1130   .text.MPU9250_Init:00000000 MPU9250_Init
+C:\msys64\tmp\cctw17Lf.s:1340   .text.MPU9250_Init:00000164 $d
+C:\msys64\tmp\cctw17Lf.s:1347   .text.MPU9250_SetAccelRange:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1353   .text.MPU9250_SetAccelRange:00000000 MPU9250_SetAccelRange
+C:\msys64\tmp\cctw17Lf.s:1392   .text.MPU9250_SetGyroRange:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1398   .text.MPU9250_SetGyroRange:00000000 MPU9250_SetGyroRange
+C:\msys64\tmp\cctw17Lf.s:1437   .text.MPU9250_SetDLPFBandwidth:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1443   .text.MPU9250_SetDLPFBandwidth:00000000 MPU9250_SetDLPFBandwidth
+C:\msys64\tmp\cctw17Lf.s:1488   .text.MPU9250_SetSampleRateDivider:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1494   .text.MPU9250_SetSampleRateDivider:00000000 MPU9250_SetSampleRateDivider
+C:\msys64\tmp\cctw17Lf.s:1592   .text.MPU9250_SetSampleRateDivider:00000090 $d
+C:\msys64\tmp\cctw17Lf.s:1597   .text.MPU9250_GetData:00000000 $t
+C:\msys64\tmp\cctw17Lf.s:1603   .text.MPU9250_GetData:00000000 MPU9250_GetData
+C:\msys64\tmp\cctw17Lf.s:1879   .text.MPU9250_GetData:0000019c $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_SPI_TransmitReceive
+HAL_SPI_Transmit
+HAL_SPI_Receive
+HAL_Delay
